@@ -6,7 +6,7 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div>
+    <div className="wrapper">
       <h1>Welcome to Whereto.stream</h1>
     </div>
   );
