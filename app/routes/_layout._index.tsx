@@ -6,6 +6,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "~/components/ui/carousel";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -52,7 +54,7 @@ export default function Index() {
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
         </TabsList>
         <TabsContent value="upcoming">
-          <Carousel>
+          <Carousel className="carousel">
             {upcoming.results && upcoming.results.length > 0 ? (
               <CarouselContent className="-ml-4">
                 {upcoming.results.map((movie) => (
@@ -65,6 +67,8 @@ export default function Index() {
                 ))}
               </CarouselContent>
             ) : null}
+            {/* <CarouselPrevious />
+            <CarouselNext /> */}
           </Carousel>
         </TabsContent>
       </Tabs>
