@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
 import { Form, json, useLoaderData } from "@remix-run/react";
 import { useCallback, useRef } from "react";
+import Card from "~/components/card";
 import {
   Carousel,
   CarouselContent,
@@ -24,13 +25,15 @@ export default function Index() {
   const inputRef = useRef<HTMLInputElement>(null);
   const { upcoming } = useLoaderData<typeof loader>();
 
+  console.log(upcoming);
+
   const handleFormClick = useCallback(() => {
     inputRef.current?.focus();
   }, []);
 
   return (
     <section className="wrapper">
-      <Form className="flex items-center gap-2 my-20" onClick={handleFormClick}>
+      <Form className="flex items-center gap-2 py-20" onClick={handleFormClick}>
         <h1 className="flex-shrink-0">Where to stream</h1>
         <Input
           size="lg"
@@ -57,15 +60,7 @@ export default function Index() {
                     key={movie.id}
                     className="md:basis-1/2 pl-4 lg:basis-1/3 "
                   >
-                    <div className="border border-neutral-100">
-                      <h3 className="text-center">{movie.title}</h3>
-                      <img
-                        width={150}
-                        alt={`${movie.title} poster`}
-                        src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-                        className="block mx-auto"
-                      />
-                    </div>
+                    <Card movie={movie} />
                   </CarouselItem>
                 ))}
               </CarouselContent>

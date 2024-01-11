@@ -1,4 +1,4 @@
-import { Form, useLocation } from "@remix-run/react";
+import { Form, Link, useLocation } from "@remix-run/react";
 import Logo from "~/components/logo";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -10,7 +10,9 @@ export default function Navigation() {
   return (
     <nav className="wrapper py-7 flex items-center">
       <div className="w-24">
-        <Logo />
+        <Link to="/">
+          <Logo />
+        </Link>
       </div>
 
       {!isHomepage ? (
