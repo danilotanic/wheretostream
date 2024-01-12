@@ -1,9 +1,11 @@
 import { Link } from "@remix-run/react";
 import { forwardRef } from "react";
 import { cn } from "~/utils";
-import { MovieData } from "~/utils/tmdb/types";
+import { MovieListData } from "~/utils/tmdb/types";
 
-type CardProps = { movie: MovieData } & React.HTMLAttributes<HTMLDivElement>;
+type CardProps = {
+  movie: MovieListData;
+} & React.HTMLAttributes<HTMLDivElement>;
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, movie, ...props }, ref) => {

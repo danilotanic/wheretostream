@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
-import { Form, json, useLoaderData } from "@remix-run/react";
+import { Form, Link, json, useLoaderData } from "@remix-run/react";
 import { useCallback, useRef } from "react";
 import Card from "~/components/card";
 import {
@@ -11,12 +11,15 @@ import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ListType, getList } from "~/utils/tmdb/list.server";
 
-export async function loader({ context }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
   const nowPlaying = await getList({ id: ListType.NowPlaying, context });
-  const popular = await getList({ id: ListType.Popular, context });
+  const popular = await getList({ id: ListType.TopRated, context });
   const upcoming = await getList({ id: ListType.Upcoming, context });
 
-  return json({ nowPlaying, popular, upcoming });
+  const url = new URL(request.url);
+  const filter = (url.searchParams.get("filter") as ListType) ?? undefined;
+
+  return json({ filter, nowPlaying, popular, upcoming });
 }
 
 export const meta: MetaFunction = () => {
@@ -25,7 +28,10 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { nowPlaying, popular, upcoming } = useLoaderData<typeof loader>();
+  const { filter, nowPlaying, popular, upcoming } =
+    useLoaderData<typeof loader>();
+
+  console.log(filter);
 
   const handleFormClick = useCallback(() => {
     inputRef.current?.focus();
@@ -45,14 +51,20 @@ export default function Index() {
         />
       </Form>
 
-      <Tabs defaultValue="nowPlaying">
+      <Tabs defaultValue={filter || "now_playing"}>
         <TabsList>
-          <TabsTrigger value="nowPlaying">New</TabsTrigger>
-          <TabsTrigger value="popular">Popular</TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="now_playing" asChild>
+            <Link to="/?filter=now_playing">Now playing</Link>
+          </TabsTrigger>
+          <TabsTrigger value="popular" asChild>
+            <Link to="/?filter=popular">Popular</Link>
+          </TabsTrigger>
+          <TabsTrigger value="upcoming" asChild>
+            <Link to="/?filter=upcoming">Upcoming</Link>
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="nowPlaying">
+        <TabsContent value="now_playing">
           <Carousel className="carousel">
             {nowPlaying.results && nowPlaying.results.length > 0 ? (
               <CarouselContent className="-ml-4">

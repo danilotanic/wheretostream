@@ -1,10 +1,10 @@
 import { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { ListData, ResponseError } from "~/utils/tmdb/types";
+import { MovieListData, ResponseError } from "~/utils/tmdb/types";
 
 type ResponseData = {
   dates: { maximum: string; minimum: string };
   page: number;
-  results: Array<ListData>;
+  results: Array<MovieListData>;
 };
 
 export enum ListType {
