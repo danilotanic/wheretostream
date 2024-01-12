@@ -91,3 +91,29 @@ export type ListData = {
   vote_average: number;
   vote_count: number;
 };
+
+export type FlatRateData = {
+  display_priority: number;
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+};
+
+export type BuyRentData = {
+  display_priority: number;
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+};
+
+export type ProviderData = {
+  link: string;
+  buy?: Array<BuyRentData>;
+  rent?: Array<BuyRentData>;
+  flatrate?: Array<FlatRateData>;
+};
+
+export type ProviderListData = {
+  id: string;
+  results: Record<string, ProviderData> | Record<string, never>;
+};

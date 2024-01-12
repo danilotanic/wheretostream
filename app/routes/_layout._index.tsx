@@ -27,8 +27,6 @@ export default function Index() {
   const inputRef = useRef<HTMLInputElement>(null);
   const { nowPlaying, popular, upcoming } = useLoaderData<typeof loader>();
 
-  console.log({ nowPlaying, popular, upcoming });
-
   const handleFormClick = useCallback(() => {
     inputRef.current?.focus();
   }, []);

@@ -16,8 +16,8 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
         )}
         {...props}
       >
-        <header className="flex text-sm text-neutral-600 dark:text-neutral-400 justify-between px-5 py-4">
-          <h3>{movie.title}</h3>
+        <header className="flex gap-4 text-sm text-neutral-600 dark:text-neutral-400 justify-between px-5 py-4">
+          <h3 className="truncate">{movie.title}</h3>
           <time>{new Date(movie.release_date).getFullYear()}</time>
         </header>
         <div className="h-56 p-4">
