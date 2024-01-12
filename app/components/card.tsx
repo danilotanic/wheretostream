@@ -1,6 +1,7 @@
+import { Link } from "@remix-run/react";
 import { forwardRef } from "react";
 import { cn } from "~/utils";
-import { MovieData } from "~/utils/tmdb.server";
+import { MovieData } from "~/utils/tmdb/types";
 
 type CardProps = { movie: MovieData } & React.HTMLAttributes<HTMLDivElement>;
 
@@ -20,11 +21,13 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           <time>{new Date(movie.release_date).getFullYear()}</time>
         </header>
         <div className="h-56 p-4">
-          <img
-            alt={`${movie.title} poster`}
-            src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-            className="block h-full mx-auto rounded-2xl shadow-2xl"
-          />
+          <Link to={`/movie/${movie.id}`}>
+            <img
+              alt={`${movie.title} poster`}
+              src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+              className="block h-full mx-auto rounded-2xl shadow-2xl"
+            />
+          </Link>
         </div>
       </div>
     );

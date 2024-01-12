@@ -6,17 +6,17 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "~/components/ui/carousel";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { getUpcoming } from "~/utils/tmdb.server";
+import { ListType, getList } from "~/utils/tmdb/list.server";
 
 export async function loader({ context }: LoaderFunctionArgs) {
-  const upcoming = await getUpcoming({ context });
+  const nowPlaying = await getList({ id: ListType.NowPlaying, context });
+  const popular = await getList({ id: ListType.Popular, context });
+  const upcoming = await getList({ id: ListType.Upcoming, context });
 
-  return json({ upcoming });
+  return json({ nowPlaying, popular, upcoming });
 }
 
 export const meta: MetaFunction = () => {
@@ -25,9 +25,9 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { upcoming } = useLoaderData<typeof loader>();
+  const { nowPlaying, popular, upcoming } = useLoaderData<typeof loader>();
 
-  console.log(upcoming);
+  console.log({ nowPlaying, popular, upcoming });
 
   const handleFormClick = useCallback(() => {
     inputRef.current?.focus();
@@ -47,12 +47,47 @@ export default function Index() {
         />
       </Form>
 
-      <Tabs defaultValue="upcoming">
+      <Tabs defaultValue="nowPlaying">
         <TabsList>
-          <TabsTrigger value="new">New</TabsTrigger>
+          <TabsTrigger value="nowPlaying">New</TabsTrigger>
           <TabsTrigger value="popular">Popular</TabsTrigger>
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="nowPlaying">
+          <Carousel className="carousel">
+            {nowPlaying.results && nowPlaying.results.length > 0 ? (
+              <CarouselContent className="-ml-4">
+                {nowPlaying.results.map((movie) => (
+                  <CarouselItem
+                    key={movie.id}
+                    className="md:basis-1/2 pl-4 lg:basis-1/3 "
+                  >
+                    <Card movie={movie} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            ) : null}
+          </Carousel>
+        </TabsContent>
+
+        <TabsContent value="popular">
+          <Carousel className="carousel">
+            {popular.results && popular.results.length > 0 ? (
+              <CarouselContent className="-ml-4">
+                {popular.results.map((movie) => (
+                  <CarouselItem
+                    key={movie.id}
+                    className="md:basis-1/2 pl-4 lg:basis-1/3 "
+                  >
+                    <Card movie={movie} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            ) : null}
+          </Carousel>
+        </TabsContent>
+
         <TabsContent value="upcoming">
           <Carousel className="carousel">
             {upcoming.results && upcoming.results.length > 0 ? (
@@ -67,8 +102,6 @@ export default function Index() {
                 ))}
               </CarouselContent>
             ) : null}
-            {/* <CarouselPrevious />
-            <CarouselNext /> */}
           </Carousel>
         </TabsContent>
       </Tabs>
