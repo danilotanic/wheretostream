@@ -13,7 +13,7 @@ import { ListType, getList } from "~/utils/tmdb/list.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const nowPlaying = await getList({ id: ListType.NowPlaying, context });
-  const popular = await getList({ id: ListType.TopRated, context });
+  const popular = await getList({ id: ListType.Popular, context });
   const upcoming = await getList({ id: ListType.Upcoming, context });
 
   const url = new URL(request.url);
@@ -38,8 +38,11 @@ export default function Index() {
   }, []);
 
   return (
-    <section className="wrapper">
-      <Form className="flex items-center gap-2 py-20" onClick={handleFormClick}>
+    <section className="wrapper flex-1 flex flex-col">
+      <Form
+        className="flex items-center gap-2 py-20 flex-1"
+        onClick={handleFormClick}
+      >
         <h1 className="flex-shrink-0">Where to stream</h1>
         <Input
           size="lg"

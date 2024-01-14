@@ -1,9 +1,87 @@
 import { LoaderFunctionArgs, json } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { flag, name } from "country-emoji";
 import { humanReadableTime } from "~/utils";
 import { getMovie, getProviders } from "~/utils/tmdb/movie.server";
-import { BuyRentData, FlatRateData } from "~/utils/tmdb/types";
+import {
+  BuyRentData,
+  FlatRateData,
+  ProviderListData,
+} from "~/utils/tmdb/types";
+
+type Data = {
+  [key: string]: {
+    [key: string]: {
+      buy?: BuyRentData;
+      rent?: BuyRentData;
+      stream?: FlatRateData;
+    };
+  };
+};
+
+function transformData(data: ProviderListData) {
+  const transformed: Data = {};
+
+  for (const country in data.results) {
+    const countryData = data.results[country];
+
+    for (const flatrate in countryData.flatrate) {
+      const provider = countryData.flatrate[Number(flatrate)];
+
+      const providerName: string = provider.provider_name
+        .replace(/\s+/g, "_")
+        .toLowerCase();
+
+      if (!transformed[providerName]) {
+        transformed[providerName] = {};
+      }
+
+      if (!transformed[providerName][country]) {
+        transformed[providerName][country] = {};
+      }
+
+      transformed[providerName][country].stream = provider;
+    }
+
+    for (const buy in countryData.buy) {
+      const provider = countryData.buy[Number(buy)];
+
+      const providerName: string = provider.provider_name
+        .replace(/\s+/g, "_")
+        .toLowerCase();
+
+      if (!transformed[providerName]) {
+        transformed[providerName] = {};
+      }
+
+      if (!transformed[providerName][country]) {
+        transformed[providerName][country] = {};
+      }
+
+      transformed[providerName][country].buy = provider;
+    }
+
+    for (const rent in countryData.rent) {
+      const provider = countryData.rent[Number(rent)];
+
+      const providerName: string = provider.provider_name
+        .replace(/\s+/g, "_")
+        .toLowerCase();
+
+      if (!transformed[providerName]) {
+        transformed[providerName] = {};
+      }
+
+      if (!transformed[providerName][country]) {
+        transformed[providerName][country] = {};
+      }
+
+      transformed[providerName][country].rent = provider;
+    }
+  }
+
+  return transformed;
+}
 
 export async function loader({ context, params }: LoaderFunctionArgs) {
   const { movieId } = params;
@@ -17,7 +95,9 @@ export async function loader({ context, params }: LoaderFunctionArgs) {
 export default function Movie() {
   const { movie, providers } = useLoaderData<typeof loader>();
 
-  console.log(providers);
+  console.log("Initial", providers);
+  const giel = transformData(providers);
+  console.log("GIEL: ", giel);
 
   return (
     <div className="wrapper border border-neutral-200 rounded-3xl p-4">
@@ -94,11 +174,13 @@ function Information({
           <ul className="flex">
             {buy?.map((rate) => (
               <li key={rate.provider_id}>
-                <img
-                  alt={`${rate.provider_name} logo`}
-                  src={`https://image.tmdb.org/t/p/w500/${rate.logo_path}`}
-                  className="w-8 h-8 rounded-full bg-white border border-neutral-100 flex items-center justify-center"
-                />
+                <Link to="">
+                  <img
+                    alt={`${rate.provider_name} logo`}
+                    src={`https://image.tmdb.org/t/p/w500/${rate.logo_path}`}
+                    className="w-8 h-8 rounded-full bg-white border border-neutral-100 flex items-center justify-center"
+                  />
+                </Link>
               </li>
             ))}
           </ul>
