@@ -7,8 +7,11 @@ import { getSteamingInfo } from "~/utils/api/index.server";
 import { BuyRentData, FlatRateData } from "~/utils/tmdb/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
-export async function loader({ context, params }: LoaderFunctionArgs) {
+export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const { movieId } = params;
+
+  const url = new URL(request.url);
+  const provider = url.searchParams.get("provider") ?? undefined;
 
   const movie = await getMovie({ id: Number(movieId), context });
   const { providers } = await getSteamingInfo({
@@ -16,11 +19,15 @@ export async function loader({ context, params }: LoaderFunctionArgs) {
     context,
   });
 
-  return json({ movie, streamingInfo: providers });
+  return json({ provider, movie, streamingInfo: providers });
 }
 
 export default function Movie() {
-  const { movie, streamingInfo } = useLoaderData<typeof loader>();
+  const { provider, movie, streamingInfo } = useLoaderData<typeof loader>();
+
+  const defaultValue = provider || Object.values(streamingInfo)?.[0]?.slug; // 1st provider
+  const hasStreamingInfo = Object.keys(streamingInfo).length;
+  const providers = Object.entries(streamingInfo);
 
   return (
     <div className="wrapper border border-neutral-200 rounded-3xl p-4">
@@ -47,25 +54,37 @@ export default function Movie() {
         {movie.overview}
       </p>
 
-      {Object.entries(streamingInfo).length > 0 ? (
-        <Tabs defaultValue={Object.values(streamingInfo)[0].slug}>
-          <TabsList>
-            {Object.entries(streamingInfo).map(([provider]) => (
+      {hasStreamingInfo > 0 ? (
+        <Tabs className="mt-10" defaultValue={defaultValue}>
+          <TabsList className="flex gap-2 items-center justify-center">
+            {providers.map(([provider, data]) => (
               <TabsTrigger key={provider} value={provider} asChild>
-                <Link to=".">{provider}</Link>
+                <Link
+                  preventScrollReset
+                  to={`/movie/${movie.id}?provider=${provider}`}
+                  className="!flex flex-col after:!hidden bg-neutral-100 rounded-2xl !p-4 data-[state=active]:bg-neutral-200"
+                >
+                  <span className="w-16 h-16 mb-2 rounded-xl bg-black" />
+                  <span className="capitalize">{provider}</span>
+                  <span className="text-neutral-600 dark:text-neutral-400 text-sm">
+                    {Object.keys(data.countries).length} Countries
+                  </span>
+                </Link>
               </TabsTrigger>
             ))}
           </TabsList>
 
-          {Object.entries(streamingInfo).map(([provider]) => (
+          {providers.map(([provider]) => (
             <TabsContent key={provider} value={provider}>
               <ul>
                 {Object.entries(streamingInfo[provider].countries).map(
                   ([key, value]) => (
-                    <li key={key}>
-                      {key}{" "}
+                    <li key={key} className="flex items-center">
+                      <Country code={key} />
                       {value.map((item, index) => (
-                        <div key={`${item}-${index}`}>{item.link}</div>
+                        <div key={`${item}-${index}`}>
+                          {item.streamingType} {item.price?.formatted}
+                        </div>
                       ))}
                     </li>
                   )
@@ -81,12 +100,12 @@ export default function Movie() {
 
 function Country({ code }: { code: string }) {
   return (
-    <td className="w-2/3 flex items-center gap-2">
+    <div className="w-2/3 flex items-center gap-2">
       <span className="w-8 h-8 rounded-full bg-white border border-neutral-100 flex items-center justify-center">
         {flag(code)}
       </span>
       {name(code)}
-    </td>
+    </div>
   );
 }
 
@@ -102,7 +121,7 @@ function Information({
   return (
     <>
       {buy && buy?.length > 0 ? (
-        <td>
+        <div>
           <ul className="flex">
             {buy?.map((rate) => (
               <li key={rate.provider_id}>
@@ -116,13 +135,13 @@ function Information({
               </li>
             ))}
           </ul>
-        </td>
+        </div>
       ) : (
-        <td></td>
+        <div></div>
       )}
 
       {rent && rent?.length > 0 ? (
-        <td>
+        <div>
           <ul className="flex">
             {rent?.map((rate) => (
               <li key={rate.provider_id}>
@@ -134,7 +153,7 @@ function Information({
               </li>
             ))}
           </ul>
-        </td>
+        </div>
       ) : (
         <td></td>
       )}

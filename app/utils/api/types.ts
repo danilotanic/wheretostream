@@ -22,6 +22,8 @@ export type Result = {
   year: number;
 };
 
+export type Price = { amount: string; currency: string; formatted: string };
+
 export type Provider = {
   addon: string;
   audios: Array<Audio>;
@@ -31,6 +33,7 @@ export type Provider = {
   service: string;
   streamingType: string;
   subtitles: Array<Subtitle>;
+  price?: Price;
 };
 
 export type Audio = {

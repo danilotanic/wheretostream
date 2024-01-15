@@ -31,8 +31,6 @@ export default function Index() {
   const { filter, nowPlaying, popular, upcoming } =
     useLoaderData<typeof loader>();
 
-  console.log(filter);
-
   const handleFormClick = useCallback(() => {
     inputRef.current?.focus();
   }, []);
