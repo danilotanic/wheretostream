@@ -9,6 +9,8 @@ declare module "@remix-run/server-runtime" {
     env: {
       TMDB_ACCESS_TOKEN: string;
       TMDB_API_KEY: string;
+      RAPID_API_KEY: string;
+      RAPID_API_HOST: string;
     };
   }
 }

@@ -2,102 +2,25 @@ import { LoaderFunctionArgs, json } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
 import { flag, name } from "country-emoji";
 import { humanReadableTime } from "~/utils";
-import { getMovie, getProviders } from "~/utils/tmdb/movie.server";
-import {
-  BuyRentData,
-  FlatRateData,
-  ProviderListData,
-} from "~/utils/tmdb/types";
-
-type Data = {
-  [key: string]: {
-    [key: string]: {
-      buy?: BuyRentData;
-      rent?: BuyRentData;
-      stream?: FlatRateData;
-    };
-  };
-};
-
-function transformData(data: ProviderListData) {
-  const transformed: Data = {};
-
-  for (const country in data.results) {
-    const countryData = data.results[country];
-
-    for (const flatrate in countryData.flatrate) {
-      const provider = countryData.flatrate[Number(flatrate)];
-
-      const providerName: string = provider.provider_name
-        .replace(/\s+/g, "_")
-        .toLowerCase();
-
-      if (!transformed[providerName]) {
-        transformed[providerName] = {};
-      }
-
-      if (!transformed[providerName][country]) {
-        transformed[providerName][country] = {};
-      }
-
-      transformed[providerName][country].stream = provider;
-    }
-
-    for (const buy in countryData.buy) {
-      const provider = countryData.buy[Number(buy)];
-
-      const providerName: string = provider.provider_name
-        .replace(/\s+/g, "_")
-        .toLowerCase();
-
-      if (!transformed[providerName]) {
-        transformed[providerName] = {};
-      }
-
-      if (!transformed[providerName][country]) {
-        transformed[providerName][country] = {};
-      }
-
-      transformed[providerName][country].buy = provider;
-    }
-
-    for (const rent in countryData.rent) {
-      const provider = countryData.rent[Number(rent)];
-
-      const providerName: string = provider.provider_name
-        .replace(/\s+/g, "_")
-        .toLowerCase();
-
-      if (!transformed[providerName]) {
-        transformed[providerName] = {};
-      }
-
-      if (!transformed[providerName][country]) {
-        transformed[providerName][country] = {};
-      }
-
-      transformed[providerName][country].rent = provider;
-    }
-  }
-
-  return transformed;
-}
+import { getMovie } from "~/utils/tmdb/movie.server";
+import { getSteamingInfo } from "~/utils/api/index.server";
+import { BuyRentData, FlatRateData } from "~/utils/tmdb/types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export async function loader({ context, params }: LoaderFunctionArgs) {
   const { movieId } = params;
 
   const movie = await getMovie({ id: Number(movieId), context });
-  const providers = await getProviders({ id: Number(movieId), context });
+  const { providers } = await getSteamingInfo({
+    id: Number(movieId),
+    context,
+  });
 
-  return json({ movie, providers });
+  return json({ movie, streamingInfo: providers });
 }
 
 export default function Movie() {
-  const { movie, providers } = useLoaderData<typeof loader>();
-
-  console.log("Initial", providers);
-  const giel = transformData(providers);
-  console.log("GIEL: ", giel);
+  const { movie, streamingInfo } = useLoaderData<typeof loader>();
 
   return (
     <div className="wrapper border border-neutral-200 rounded-3xl p-4">
@@ -123,26 +46,35 @@ export default function Movie() {
       <p className="mx-auto max-w-md text-center text-neutral-600 dark:text-neutral-400">
         {movie.overview}
       </p>
-      <table className="mt-16 w-full text-left">
-        <thead>
-          <tr>
-            <th className="w-2/3">Country</th>
-            <th>Buy</th>
-            <th>Rent</th>
-            <th>Stream</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(providers.results).length === 0
-            ? null
-            : Object.entries(providers.results).map(([key, value]) => (
-                <tr key={providers.results[key].link}>
-                  <Country code={key} />
-                  <Information {...value} />
-                </tr>
-              ))}
-        </tbody>
-      </table>
+
+      {Object.entries(streamingInfo).length > 0 ? (
+        <Tabs defaultValue={Object.values(streamingInfo)[0].slug}>
+          <TabsList>
+            {Object.entries(streamingInfo).map(([provider]) => (
+              <TabsTrigger key={provider} value={provider} asChild>
+                <Link to=".">{provider}</Link>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {Object.entries(streamingInfo).map(([provider]) => (
+            <TabsContent key={provider} value={provider}>
+              <ul>
+                {Object.entries(streamingInfo[provider].countries).map(
+                  ([key, value]) => (
+                    <li key={key}>
+                      {key}{" "}
+                      {value.map((item, index) => (
+                        <div key={`${item}-${index}`}>{item.link}</div>
+                      ))}
+                    </li>
+                  )
+                )}
+              </ul>
+            </TabsContent>
+          ))}
+        </Tabs>
+      ) : null}
     </div>
   );
 }
