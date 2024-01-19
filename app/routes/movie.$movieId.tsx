@@ -1,11 +1,12 @@
-import { LoaderFunctionArgs, json } from "@remix-run/cloudflare";
-import { Link, useLoaderData } from "@remix-run/react";
+import { LoaderFunctionArgs, defer, json } from "@remix-run/cloudflare";
+import { Await, Link, useLoaderData } from "@remix-run/react";
 import { flag, name } from "country-emoji";
 import { humanReadableTime } from "~/utils";
 import { getMovie } from "~/utils/tmdb/movie.server";
 import { getSteamingInfo } from "~/utils/api/index.server";
 import { BuyRentData, FlatRateData } from "~/utils/tmdb/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Suspense } from "react";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const { movieId } = params;
@@ -13,21 +14,26 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const provider = url.searchParams.get("provider") ?? undefined;
 
-  const movie = await getMovie({ id: Number(movieId), context });
-  const { providers } = await getSteamingInfo({
+  const streamingInfo = getSteamingInfo({
     id: Number(movieId),
     context,
   });
 
-  return json({ provider, movie, streamingInfo: providers });
+  const movie = await getMovie({ id: Number(movieId), context });
+
+  return defer({ provider, movie, streamingInfo });
 }
 
 export default function Movie() {
-  const { provider, movie, streamingInfo } = useLoaderData<typeof loader>();
+  const {
+    provider,
+    movie,
+    streamingInfo: providers,
+  } = useLoaderData<typeof loader>();
 
-  const defaultValue = provider || Object.values(streamingInfo)?.[0]?.slug; // 1st provider
-  const hasStreamingInfo = Object.keys(streamingInfo).length;
-  const providers = Object.entries(streamingInfo);
+  // const defaultValue = provider || Object.values(streamingInfo)?.[0]?.slug; // 1st provider
+  // const hasStreamingInfo = Object.keys(streamingInfo).length;
+  // const providers = Object.entries(streamingInfo);
 
   return (
     <div className="wrapper border border-neutral-200 rounded-3xl p-4">
@@ -50,11 +56,68 @@ export default function Movie() {
           className="block h-full mx-auto rounded-2xl shadow-2xl"
         />
       </div>
-      <p className="mx-auto max-w-md text-center text-neutral-600 dark:text-neutral-400">
+      <p className="mx-auto text-balance max-w-md text-center text-neutral-600 dark:text-neutral-400">
         {movie.overview}
       </p>
 
-      {hasStreamingInfo > 0 ? (
+      <Suspense fallback={"loading..."}>
+        <Await resolve={providers}>
+          {(providers) => (
+            <Tabs className="mt-10" defaultValue={providers[0].slug}>
+              <TabsList className="flex gap-2 items-center justify-center">
+                {providers.map((provider) => (
+                  <TabsTrigger
+                    key={provider.slug}
+                    value={provider.slug}
+                    asChild
+                  >
+                    <Link
+                      preventScrollReset
+                      to={`/movie/${movie.id}?provider=${provider.slug}`}
+                      className="!flex flex-col after:!hidden bg-neutral-100 rounded-2xl !p-4 data-[state=active]:bg-neutral-200"
+                    >
+                      <span className="w-16 h-16 mb-2 rounded-xl bg-black" />
+                      <span className="capitalize">{provider.slug}</span>
+                      <span className="text-neutral-600 dark:text-neutral-400 text-sm">
+                        {provider.countries.length} Countries
+                      </span>
+                    </Link>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              {providers.map((provider) => (
+                <TabsContent key={provider.slug} value={provider.slug}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Country</th>
+                        <th>Buy</th>
+                        <th>Rent</th>
+                        <th>Flatrate</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {provider.countries.map((country) => (
+                        <tr key={country.code} className="flex items-center">
+                          <td>
+                            <Country code={country.code} />
+                          </td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </TabsContent>
+              ))}
+            </Tabs>
+          )}
+        </Await>
+      </Suspense>
+
+      {/* {hasStreamingInfo > 0 ? (
         <Tabs className="mt-10" defaultValue={defaultValue}>
           <TabsList className="flex gap-2 items-center justify-center">
             {providers.map(([provider, data]) => (
@@ -93,7 +156,7 @@ export default function Movie() {
             </TabsContent>
           ))}
         </Tabs>
-      ) : null}
+      ) : null} */}
     </div>
   );
 }
