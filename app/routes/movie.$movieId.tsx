@@ -82,7 +82,7 @@ export default function Movie() {
                       >
                         <Link
                           preventScrollReset
-                          to={`/movie/${movie.id}?provider=${provider.slug}`}
+                          to={`?provider=${provider.slug}`}
                           className="!flex flex-col after:!hidden bg-neutral-100 rounded-2xl !p-4 data-[state=active]:bg-neutral-200"
                         >
                           <span className="w-16 h-16 mb-2 rounded-xl bg-black" />

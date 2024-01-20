@@ -55,13 +55,13 @@ export default function Index() {
       <Tabs defaultValue={filter || "now_playing"}>
         <TabsList>
           <TabsTrigger value="now_playing" asChild>
-            <Link to="/?filter=now_playing">Now playing</Link>
+            <Link to="?filter=now_playing">Now playing</Link>
           </TabsTrigger>
           <TabsTrigger value="popular" asChild>
-            <Link to="/?filter=popular">Popular</Link>
+            <Link to="?filter=popular">Popular</Link>
           </TabsTrigger>
           <TabsTrigger value="upcoming" asChild>
-            <Link to="/?filter=upcoming">Upcoming</Link>
+            <Link to="?filter=upcoming">Upcoming</Link>
           </TabsTrigger>
         </TabsList>
 
