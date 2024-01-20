@@ -8,7 +8,7 @@ export default function Navigation() {
   const isHomepage = location.pathname === "/";
 
   return (
-    <nav className="wrapper py-7 flex items-center">
+    <nav className="wrapper w-full py-7 flex items-center">
       <div className="w-24">
         <Link to="/">
           <Logo />

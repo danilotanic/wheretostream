@@ -1,10 +1,10 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
 import { Form, Link, json, useLoaderData } from "@remix-run/react";
-import { useEffect, useRef } from "react";
 import Card from "~/components/card";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Ticker } from "~/components/ui/ticker";
+import useAutofocus from "~/hooks/useAutofocus";
 import { ListType, getList } from "~/utils/tmdb/list.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
@@ -23,55 +23,9 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const inputRef = useRef<HTMLInputElement>(null);
   const { filter, nowPlaying, popular, upcoming } =
     useLoaderData<typeof loader>();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
-      ) {
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 10);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // List of keys that should allow default browser behavior
-      const allowedKeys = [
-        "F5",
-        "F12",
-        "Tab",
-        "Control",
-        "Meta",
-        "Alt",
-        "Escape",
-      ];
-      if (allowedKeys.includes(event.key)) {
-        return; // Skip refocusing for these keys
-      }
-
-      // Refocus the input for other keys
-      if (inputRef.current) {
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 10);
-      }
-    };
-
-    // Bind the event listeners
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      // Unbind the event listeners on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []); // Dependencies array remains empty as we don't need to re-run this effect based on any changing props or state.
+  const inputRef = useAutofocus();
 
   return (
     <section className="flex-1 flex flex-col">
