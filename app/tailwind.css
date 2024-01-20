@@ -19,8 +19,4 @@
   .wrapper {
     @apply max-w-5xl mx-auto px-4;
   }
-
-  .carousel > div {
-    @apply !overflow-visible;
-  }
 }

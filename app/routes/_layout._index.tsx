@@ -1,14 +1,10 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
 import { Form, Link, json, useLoaderData } from "@remix-run/react";
-import { useCallback, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Card from "~/components/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "~/components/ui/carousel";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Ticker } from "~/components/ui/ticker";
 import { ListType, getList } from "~/utils/tmdb/list.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
@@ -31,29 +27,70 @@ export default function Index() {
   const { filter, nowPlaying, popular, upcoming } =
     useLoaderData<typeof loader>();
 
-  const handleFormClick = useCallback(() => {
-    inputRef.current?.focus();
-  }, []);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 10);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // List of keys that should allow default browser behavior
+      const allowedKeys = [
+        "F5",
+        "F12",
+        "Tab",
+        "Control",
+        "Meta",
+        "Alt",
+        "Escape",
+      ];
+      if (allowedKeys.includes(event.key)) {
+        return; // Skip refocusing for these keys
+      }
+
+      // Refocus the input for other keys
+      if (inputRef.current) {
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 10);
+      }
+    };
+
+    // Bind the event listeners
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      // Unbind the event listeners on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []); // Dependencies array remains empty as we don't need to re-run this effect based on any changing props or state.
 
   return (
-    <section className="wrapper flex-1 flex flex-col">
-      <Form
-        className="flex items-center gap-2 py-20 flex-1"
-        onClick={handleFormClick}
-      >
+    <section className="flex-1 flex flex-col">
+      <Form className="flex w-full wrapper items-center gap-2 py-20 flex-1">
         <h1 className="flex-shrink-0">Where to stream</h1>
         <Input
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
           size="lg"
-          variant="minimal"
           name="search"
           type="search"
           ref={inputRef}
+          variant="minimal"
           placeholder="e.g. the godfather"
         />
       </Form>
 
       <Tabs defaultValue={filter || "now_playing"}>
-        <TabsList>
+        <TabsList className="wrapper w-full mx-auto justify-start block">
           <TabsTrigger value="now_playing" asChild>
             <Link to="?filter=now_playing">Now playing</Link>
           </TabsTrigger>
@@ -66,54 +103,33 @@ export default function Index() {
         </TabsList>
 
         <TabsContent value="now_playing">
-          <Carousel className="carousel">
-            {nowPlaying.results && nowPlaying.results.length > 0 ? (
-              <CarouselContent className="-ml-4">
-                {nowPlaying.results.map((movie) => (
-                  <CarouselItem
-                    key={movie.id}
-                    className="md:basis-1/2 pl-4 lg:basis-1/3 "
-                  >
-                    <Card movie={movie} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            ) : null}
-          </Carousel>
+          {nowPlaying.results && nowPlaying.results.length > 0 ? (
+            <Ticker pauseOnHover className="w-full">
+              {nowPlaying.results.map((movie) => (
+                <Card key={movie.id} movie={movie} />
+              ))}
+            </Ticker>
+          ) : null}
         </TabsContent>
 
         <TabsContent value="popular">
-          <Carousel className="carousel">
-            {popular.results && popular.results.length > 0 ? (
-              <CarouselContent className="-ml-4">
-                {popular.results.map((movie) => (
-                  <CarouselItem
-                    key={movie.id}
-                    className="md:basis-1/2 pl-4 lg:basis-1/3 "
-                  >
-                    <Card movie={movie} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            ) : null}
-          </Carousel>
+          {popular.results && popular.results.length > 0 ? (
+            <Ticker pauseOnHover className="w-full">
+              {popular.results.map((movie) => (
+                <Card key={movie.id} movie={movie} />
+              ))}
+            </Ticker>
+          ) : null}
         </TabsContent>
 
         <TabsContent value="upcoming">
-          <Carousel className="carousel">
-            {upcoming.results && upcoming.results.length > 0 ? (
-              <CarouselContent className="-ml-4">
-                {upcoming.results.map((movie) => (
-                  <CarouselItem
-                    key={movie.id}
-                    className="md:basis-1/2 pl-4 lg:basis-1/3 "
-                  >
-                    <Card movie={movie} />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            ) : null}
-          </Carousel>
+          {upcoming.results && upcoming.results.length > 0 ? (
+            <Ticker pauseOnHover className="w-full">
+              {upcoming.results.map((movie) => (
+                <Card key={movie.id} movie={movie} />
+              ))}
+            </Ticker>
+          ) : null}
         </TabsContent>
       </Tabs>
     </section>
