@@ -64,15 +64,15 @@ export type APIPrice = { amount: string; currency: string; formatted: string };
 
 export type APIOption = {
   link: string;
-  price: APIPrice;
   availableSince: number;
+  price?: APIPrice;
 };
 
 export type APICountry = {
   code: string;
   buy?: APIOption;
   rent?: APIOption;
-  stream?: APIOption;
+  subscription?: APIOption;
 };
 
 export type APIProvider = {
