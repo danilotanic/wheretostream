@@ -12,6 +12,8 @@
     "pages:deploy": "npm run build && wrangler pages deploy ./public"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@remix-run/cloudflare": "^2.5.1",
@@ -20,6 +22,7 @@
     "@remix-run/react": "^2.5.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "cmdk": "^0.2.0",
     "country-emoji": "^1.5.6",
     "embla-carousel-autoplay": "^8.0.0-rc19",
     "embla-carousel-react": "^8.0.0-rc19",

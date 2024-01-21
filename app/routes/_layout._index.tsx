@@ -1,5 +1,12 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
-import { Form, Link, json, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  json,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react";
+import { useDeferredValue, useEffect, useState } from "react";
 import Card from "~/components/card";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -8,12 +15,12 @@ import useAutofocus from "~/hooks/useAutofocus";
 import { ListType, getList } from "~/utils/tmdb/list.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const filter = (url.searchParams.get("filter") as ListType) ?? undefined;
+
   const nowPlaying = await getList({ id: ListType.NowPlaying, context });
   const popular = await getList({ id: ListType.Popular, context });
   const upcoming = await getList({ id: ListType.Upcoming, context });
-
-  const url = new URL(request.url);
-  const filter = (url.searchParams.get("filter") as ListType) ?? undefined;
 
   return json({ filter, nowPlaying, popular, upcoming });
 }
@@ -25,7 +32,18 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const { filter, nowPlaying, popular, upcoming } =
     useLoaderData<typeof loader>();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [value, setValue] = useState(() => {
+    return searchParams.get("query") ?? "";
+  });
+
+  const deferredValue = useDeferredValue(value);
   const inputRef = useAutofocus();
+
+  useEffect(() => {
+    setSearchParams({ query: deferredValue });
+  }, [deferredValue, setSearchParams]);
 
   return (
     <section className="flex-1 flex flex-col">
@@ -35,11 +53,12 @@ export default function Index() {
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           size="lg"
-          name="search"
+          name="query"
           type="search"
           ref={inputRef}
           variant="minimal"
           placeholder="e.g. the godfather"
+          onChange={(event) => setValue(event.target.value)}
         />
       </Form>
 

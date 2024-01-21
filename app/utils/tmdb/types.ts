@@ -117,3 +117,10 @@ export type ProviderListData = {
   id: string;
   results: Record<string, ProviderData> | Record<string, never>;
 };
+
+export type SearchListType = {
+  page: number;
+  total_pages: number;
+  total_results: number;
+  results: Array<MovieListData>;
+};
