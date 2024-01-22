@@ -1,26 +1,17 @@
 import { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { MovieListData, ResponseError } from "~/utils/tmdb/types";
+import {
+  MovieResponse,
+  MovieResult,
+  ResponseError,
+} from "~/utils/api/moviedb.types";
 
-type ResponseData = {
-  dates: { maximum: string; minimum: string };
-  page: number;
-  results: Array<MovieListData>;
-};
-
-export enum ListType {
-  NowPlaying = "now_playing",
-  Popular = "popular",
-  TopRated = "top_rated",
-  Upcoming = "upcoming",
-}
-
-export async function getList({
-  id = ListType.Popular,
+export async function getMovie({
+  id,
   context,
 }: {
-  id: ListType;
+  id: MovieResult["id"];
   context: LoaderFunctionArgs["context"];
-}): Promise<ResponseData> {
+}): Promise<MovieResponse> {
   const response = await fetch(`https://api.themoviedb.org/3/movie/${id}`, {
     method: "GET",
     headers: {
@@ -30,7 +21,7 @@ export async function getList({
   });
 
   if (response.ok) {
-    const data: ResponseData = await response.json();
+    const data: MovieResponse = await response.json();
     return data;
   } else {
     const error: ResponseError = await response.json();

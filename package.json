@@ -28,7 +28,6 @@
     "embla-carousel-react": "^8.0.0-rc19",
     "isbot": "^4.4.0",
     "lucide-react": "^0.312.0",
-    "moviedb-promise": "^4.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.2.0",

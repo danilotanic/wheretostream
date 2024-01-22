@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react";
-import { APIOption } from "~/utils/api/index.server";
+import { APIOption } from "~/utils/api/streaming.server";
 
 export default function Price({ link, price }: APIOption) {
   return (

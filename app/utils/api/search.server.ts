@@ -1,13 +1,13 @@
 import { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { ResponseError, SearchListType } from "~/utils/tmdb/types";
+import { ResponseError, SearchMultiResponse } from "~/utils/api/moviedb.types";
 
-export async function searchMovieOrSeries({
+export async function getMovieOrSeries({
   query,
   context,
 }: {
   query: string;
   context: LoaderFunctionArgs["context"];
-}): Promise<SearchListType["results"] | ResponseError> {
+}): Promise<SearchMultiResponse["results"]> {
   const response = await fetch(
     `https://api.themoviedb.org/3/search/multi?query=${query}`,
     {
@@ -20,7 +20,7 @@ export async function searchMovieOrSeries({
   );
 
   if (response.ok) {
-    const data: SearchListType = await response.json();
+    const data: SearchMultiResponse = await response.json();
     return data.results;
   } else {
     const error: ResponseError = await response.json();

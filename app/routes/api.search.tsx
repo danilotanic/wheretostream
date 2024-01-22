@@ -1,19 +1,20 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { searchMovieOrSeries } from "~/utils/tmdb/search.server";
-import { MovieListData } from "~/utils/tmdb/types";
+import { SearchMultiResponse } from "~/utils/api/moviedb.types";
+import { getMovieOrSeries } from "~/utils/api/search.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const query = url.searchParams.get("q");
 
-  const results = (
-    (await searchMovieOrSeries({
-      context,
-      query: query || "",
-    })) as MovieListData[]
-  ).slice(0, 6);
+  const results = (await getMovieOrSeries({
+    context,
+    query: query || "",
+  })) as SearchMultiResponse["results"];
 
-  return json(results, {
+  const withoutPeople =
+    results?.filter((item) => item.media_type !== "person") ?? [];
+
+  return json(withoutPeople.slice(0, 6), {
     // Add a little bit of caching so when the user backspaces a value in the
     // Combobox, the browser has a local copy of the data and doesn't make a
     // request to the server for it. No need to send a client side data fetching

@@ -29,12 +29,24 @@ export default {
           from: { transform: "translateY(0)" },
           to: { transform: "translateY(calc(-100% - var(--gap)))" },
         },
+        "activity-indicator": {
+          "0%": {
+            opacity: "0.85",
+          },
+          "50%": {
+            opacity: "0.25",
+          },
+          "100%": {
+            opacity: "0.25",
+          },
+        },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "marquee-left": "marquee-left var(--duration, 120s) linear infinite",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "activity-indicator": "activity-indicator linear infinite",
         "marquee-up": "marquee-up var(--duration, 120s) linear infinite",
+        "marquee-left": "marquee-left var(--duration, 120s) linear infinite",
       },
     },
   },

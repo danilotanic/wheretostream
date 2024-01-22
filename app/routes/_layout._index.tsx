@@ -12,7 +12,7 @@ import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Ticker } from "~/components/ui/ticker";
 import useAutofocus from "~/hooks/useAutofocus";
-import { ListType, getList } from "~/utils/tmdb/list.server";
+import { ListType, getList } from "~/utils/api/list.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);

@@ -1,10 +1,10 @@
 import { Link } from "@remix-run/react";
 import { forwardRef } from "react";
 import { cn } from "~/utils";
-import { MovieListData } from "~/utils/tmdb/types";
+import { MovieResult } from "~/utils/api/moviedb.types";
 
 type CardProps = {
-  movie: MovieListData;
+  movie: MovieResult;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
@@ -20,7 +20,11 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       >
         <header className="flex gap-4 text-sm text-neutral-600 dark:text-neutral-400 justify-between px-5 py-4">
           <h3 className="truncate">{movie.title}</h3>
-          <time>{new Date(movie.release_date).getFullYear()}</time>
+          <time>
+            {movie.release_date
+              ? new Date(movie.release_date).getFullYear()
+              : "N/A"}
+          </time>
         </header>
         <div className="h-56 p-4">
           <Link to={`/movie/${movie.id}`}>
