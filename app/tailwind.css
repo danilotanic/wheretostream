@@ -19,4 +19,13 @@
   .wrapper {
     @apply max-w-5xl mx-auto px-4;
   }
+
+  /* Make clicks pass-through */
+  #nprogress {
+    pointer-events: none;
+  }
+
+  #nprogress .bar {
+    @apply fixed left-0 top-0 z-[1031] h-[2px] w-full bg-black dark:bg-white;
+  }
 }
