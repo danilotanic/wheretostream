@@ -12,6 +12,7 @@ import {
 import styles from "./tailwind.css";
 import NProgress from "nprogress";
 import { useEffect, useRef } from "react";
+import SearchProvider from "~/components/search";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -56,7 +57,9 @@ export default function App() {
         <Links />
       </head>
       <body className="bg-white dark:bg-black text-black dark:text-white">
-        <Outlet />
+        <SearchProvider>
+          <Outlet />
+        </SearchProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

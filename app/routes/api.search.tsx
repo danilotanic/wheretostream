@@ -14,7 +14,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const withoutPeople =
     results?.filter((item) => item.media_type !== "person") ?? [];
 
-  return json(withoutPeople.slice(0, 6), {
+  return json(withoutPeople, {
     // Add a little bit of caching so when the user backspaces a value in the
     // Combobox, the browser has a local copy of the data and doesn't make a
     // request to the server for it. No need to send a client side data fetching

@@ -1,89 +1,82 @@
-import { Link, useFetcher, useNavigation } from "@remix-run/react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import ActivityIndicator from "~/components/activityIndicator";
-import { Input } from "~/components/ui/input";
-import { cn } from "~/utils";
+import { useFetcher } from "@remix-run/react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  CommandDialog,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "~/components/ui/command";
 import { MovieResult, TvResult } from "~/utils/api/moviedb.types";
 
-export default function Search() {
-  const navigation = useNavigation();
-  const formRef = useRef<HTMLFormElement>(null);
+type ContextProps = {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-  const [query, setQuery] = useState("");
+export const SearchContext = createContext<ContextProps>({
+  open: false,
+  setOpen: () => {},
+});
+
+export function useSearchContext() {
+  return useContext(SearchContext);
+}
+
+export default function SearchProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
-
-  const { data, load, state } = useFetcher<Array<MovieResult | TvResult>>();
-
-  const handleOnBlur = useCallback(() => {
-    // Close the dropdown when the user clicks away from the input
-    setOpen(false);
-  }, []);
-
-  const handleOnFocus = useCallback(() => {
-    if (data && data.length > 0) {
-      setOpen(true);
-    }
-  }, [data]);
-
-  useEffect(
-    // Get the data from the server
-    function searchData() {
-      load(`/api/search?q=${query}`);
-    },
-    [load, query]
-  );
-
-  useEffect(() => {
-    // If there is data and it's not empty, open the dropdown
-    if (data && data.length > 0) {
-      setOpen(true);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    // If the user navigates away from the search page, close the dropdown
-    if (navigation.location?.pathname) {
-      setOpen(false);
-      formRef.current?.reset();
-    }
-  }, [navigation.location?.pathname]);
+  const value = useMemo(() => ({ open, setOpen }), [open]);
 
   return (
-    <>
-      <div className="relative flex-1">
-        <form className="flex items-center relative" ref={formRef}>
-          <Input
-            className="max-w-xs mx-auto focus:max-w-full transition-all"
-            placeholder="Search movies or series..."
-            onFocus={handleOnFocus}
-            onChange={(event) => setQuery(event.currentTarget.value)}
-          />
-          {state === "loading" ? (
-            <ActivityIndicator size={18} className="!absolute right-4" />
-          ) : null}
-        </form>
+    <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
+  );
+}
 
-        {open ? (
-          <div className={cn("absolute top-full w-full bg-white")}>
-            {data && data.length > 0 ? (
-              <ul className="grid grid-cols-3">
-                {data.map((item) => (
-                  <li key={item.id}>
-                    <Link to={`/${item.media_type}/${item.id}`}>
-                      <img
-                        alt=""
-                        src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
-                        className="h-36"
-                      />
-                      {"title" in item ? item.title : (item as TvResult).name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
-        ) : null}
+export function SearchDialog() {
+  const [value, setValue] = useState("");
+  const { open, setOpen } = useSearchContext();
+
+  const search = useFetcher<Array<MovieResult | TvResult>>();
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, [setOpen]);
+
+  return (
+    <CommandDialog
+      open={open}
+      onOpenChange={setOpen}
+      commandProps={{
+        value,
+        onValueChange: (v) => setValue(v),
+      }}
+    >
+      <CommandInput
+        onValueChange={(value) => search.load(`/api/search?q=${value}`)}
+      />
+      <div className="flex items-start">
+        <CommandList className="w-2/5">
+          {search.data &&
+            search.data.length > 0 &&
+            search.data.map((item) => (
+              <CommandItem key={item.id} value={`${item.id}`}>
+                {"title" in item ? item.title : (item as TvResult).name}
+              </CommandItem>
+            ))}
+        </CommandList>
+        <hr className="w-[1px] h-full bg-neutral-200" />
+        <div>Preview</div>
       </div>
-    </>
+    </CommandDialog>
   );
 }

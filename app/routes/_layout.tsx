@@ -1,6 +1,7 @@
 import { Outlet } from "@remix-run/react";
 import Footer from "~/components/footer";
 import Navigation from "~/components/navigation";
+import { SearchDialog } from "~/components/search";
 
 export default function AppLayout() {
   return (
@@ -10,6 +11,7 @@ export default function AppLayout() {
         <Outlet />
       </div>
       <Footer />
+      <SearchDialog />
     </main>
   );
 }
