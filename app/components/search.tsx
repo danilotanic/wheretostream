@@ -1,5 +1,5 @@
 import { useFetcher, useNavigate } from "@remix-run/react";
-import { SearchIcon } from "lucide-react";
+import { ImageIcon, SearchIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import {
@@ -71,7 +71,7 @@ export function SearchDialog() {
       onOpenChange={setOpen}
       commandProps={{ shouldFilter: false, className: "w-full" }}
     >
-      <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+      <div className="flex items-center border-b px-3">
         <SearchIcon className="mr-2 size-4 shrink-0 opacity-50" />
         <CommandInput
           className="flex-1"
@@ -94,11 +94,17 @@ export function SearchDialog() {
               resetFetcher();
             }}
           >
-            <img
-              alt="Poster"
-              src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
-              className="h-full rounded-2xl"
-            />
+            {item.poster_path ? (
+              <img
+                alt="Poster"
+                src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
+                className="h-full flex-shrink-0 w-[100px] object-cover rounded-2xl"
+              />
+            ) : (
+              <div className="h-full flex-shrink-0 w-[100px] flex items-center justify-center bg-neutral-200 rounded-2xl">
+                <ImageIcon />
+              </div>
+            )}
             <div className="size-full rounded-xl p-4 group-aria-selected:bg-neutral-100">
               <time className="text-xs text-neutral-600">
                 {"release_date" in item

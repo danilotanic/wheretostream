@@ -6,7 +6,7 @@ type ActivityIndicatorProps = {
 
 export default function ActivityIndicator({
   style,
-  size = 16,
+  size = 18,
   className,
 }: ActivityIndicatorProps) {
   const amount = 8;

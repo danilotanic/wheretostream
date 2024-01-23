@@ -1,18 +1,18 @@
 import { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import {
-  MovieResponse,
   MovieResult,
   ResponseError,
+  ShowResponse,
 } from "~/utils/api/moviedb.types";
 
-export async function getMovie({
+export async function getShow({
   id,
   context,
 }: {
   id: MovieResult["id"];
   context: LoaderFunctionArgs["context"];
-}): Promise<MovieResponse> {
-  const response = await fetch(`https://api.themoviedb.org/3/movie/${id}`, {
+}): Promise<ShowResponse> {
+  const response = await fetch(`https://api.themoviedb.org/3/tv/${id}`, {
     method: "GET",
     headers: {
       accept: "application/json",
@@ -20,10 +20,8 @@ export async function getMovie({
     },
   });
 
-  console.log(response);
-
   if (response.ok) {
-    const data: MovieResponse = await response.json();
+    const data: ShowResponse = await response.json();
     return data;
   } else {
     const error: ResponseError = await response.json();

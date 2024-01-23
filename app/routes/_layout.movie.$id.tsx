@@ -15,58 +15,68 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { humanReadableTime } from "~/utils";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
 import { getMovie } from "~/utils/api/movie.server";
+import ActivityIndicator from "~/components/activityIndicator";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
-  const { movieId } = params;
+  const { id } = params;
 
   const url = new URL(request.url);
   const provider = url.searchParams.get("provider") ?? undefined;
 
   const streamingInfo = getSteamingInfo({
-    id: Number(movieId),
+    id: Number(id),
+    type: "movie",
     context,
   });
 
-  const movie = await getMovie({ id: Number(movieId), context });
+  const details = await getMovie({ id: Number(id), context });
 
-  return defer({ provider, movie, streamingInfo });
+  return defer({ provider, details, streamingInfo });
 }
 
 export default function Movie() {
   const {
     provider,
-    movie,
+    details,
     streamingInfo: providers,
   } = useLoaderData<typeof loader>();
 
   return (
     <div className="wrapper w-full border border-neutral-200 rounded-3xl p-4">
       <header className="grid grid-cols-3 text-sm text-neutral-600 dark:text-neutral-400 justify-between">
-        <h1 className="text-sm truncate">{movie.title}</h1>
+        <h1 className="text-sm truncate">{details.title}</h1>
         <ul className="flex justify-center items-center gap-4">
-          {movie.genres?.map((genre) => (
+          {details.genres?.map((genre) => (
             <li key={genre.id}>{genre.name}</li>
           ))}
-          <li>{movie.runtime ? humanReadableTime(movie.runtime) : "N/A"}</li>
+          <li>
+            {details.runtime ? humanReadableTime(details.runtime) : "N/A"}
+          </li>
         </ul>
         <time className="text-right">
-          {movie.release_date
-            ? new Date(movie.release_date).getFullYear()
+          {details.release_date
+            ? new Date(details.release_date).getFullYear()
             : "N/A"}
         </time>
       </header>
       <div className="h-56 p-4">
         <img
-          alt={`${movie.title} poster`}
-          src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+          alt={`${details.title} poster`}
+          src={`https://image.tmdb.org/t/p/w500/${details.poster_path}`}
           className="block h-full mx-auto rounded-2xl shadow-2xl"
         />
       </div>
       <p className="mx-auto text-balance max-w-md text-center text-neutral-600 dark:text-neutral-400">
-        {movie.overview}
+        {details.overview}
       </p>
 
-      <Suspense fallback={"loading..."}>
+      <Suspense
+        fallback={
+          <div className="flex p-8 items-center justify-center">
+            <ActivityIndicator />
+          </div>
+        }
+      >
         <Await resolve={providers}>
           {(providers) => (
             <>

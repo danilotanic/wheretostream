@@ -7,13 +7,15 @@ import {
 
 export async function getSteamingInfo({
   id,
+  type,
   context,
 }: {
   id: MovieResult["id"];
+  type: "tv" | "movie";
   context: LoaderFunctionArgs["context"];
 }): Promise<StreamingResponse> {
   const response = await fetch(
-    `https://streaming-availability.p.rapidapi.com/get?tmdb_id=movie/${id}`,
+    `https://streaming-availability.p.rapidapi.com/get?tmdb_id=${type}/${id}`,
     {
       method: "GET",
       headers: {

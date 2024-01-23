@@ -258,6 +258,7 @@ export interface SimpleEpisode {
   still_path?: string;
   vote_average?: number;
   vote_count?: number;
+  runtime?: number;
 }
 
 export interface Network {
