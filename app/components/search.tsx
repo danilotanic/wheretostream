@@ -1,10 +1,13 @@
 import { useFetcher, useNavigate } from "@remix-run/react";
+import { SearchIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import ActivityIndicator from "~/components/activityIndicator";
 import {
   CommandDialog,
   CommandInput,
   CommandItem,
   CommandList,
+  CommandLoading,
 } from "~/components/ui/command";
 import { MovieResult, TvResult } from "~/utils/api/moviedb.types";
 
@@ -37,8 +40,8 @@ export default function SearchProvider({
 
 export function SearchDialog() {
   const navigate = useNavigate();
-  const [key, setKey] = useState(() => Math.random().toString());
   const { open, setOpen } = useSearchContext();
+  const [key, setKey] = useState(() => Math.random().toString());
   const search = useFetcher<Array<MovieResult | TvResult>>({ key });
 
   function resetFetcher() {
@@ -47,11 +50,18 @@ export function SearchDialog() {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
+      // Check if the key is a letter (A-Z) or a number (0-9), and no meta keys are pressed
+      if (
+        /^[a-z0-9]$/i.test(e.key) &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !e.shiftKey
+      ) {
+        setOpen(true);
       }
     };
+
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, [setOpen]);
@@ -62,9 +72,17 @@ export function SearchDialog() {
       onOpenChange={setOpen}
       commandProps={{ shouldFilter: false, className: "w-full" }}
     >
-      <CommandInput
-        onValueChange={(value) => search.load(`/api/search?q=${value}`)}
-      />
+      <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+        <SearchIcon className="mr-2 size-4 shrink-0 opacity-50" />
+        <CommandInput
+          className="flex-1"
+          placeholder="Search for a movies or series..."
+          onValueChange={(value) => search.load(`/api/search?q=${value}`)}
+        />
+        {search.state === "loading" ? (
+          <ActivityIndicator size={16} className="absolute right-7 top-[2px]" />
+        ) : null}
+      </div>
       <CommandList className="command-list">
         {search.data?.slice(0, 6).map((item) => (
           <CommandItem

@@ -1,6 +1,9 @@
 import * as React from "react";
 import { type DialogProps } from "@radix-ui/react-dialog";
-import { Command as CommandPrimitive } from "cmdk";
+import {
+  CommandLoading as CommandLoadingPrimitive,
+  Command as CommandPrimitive,
+} from "cmdk";
 import { Search } from "lucide-react";
 
 import { cn } from "~/utils";
@@ -48,17 +51,14 @@ const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
-  <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
-    <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-    <CommandPrimitive.Input
-      ref={ref}
-      className={cn(
-        "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-neutral-400",
-        className
-      )}
-      {...props}
-    />
-  </div>
+  <CommandPrimitive.Input
+    ref={ref}
+    className={cn(
+      "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-neutral-400",
+      className
+    )}
+    {...props}
+  />
 ));
 
 CommandInput.displayName = CommandPrimitive.Input.displayName;
@@ -70,7 +70,7 @@ const CommandList = React.forwardRef<
   <CommandPrimitive.List
     ref={ref}
     className={cn(
-      "min-h-[300px] transition-[height] h-[var(--cmdk-list-height)] overflow-y-auto overflow-x-hidden",
+      "min-h-[320px] transition-[height] h-[var(--cmdk-list-height)] overflow-y-auto overflow-x-hidden",
       className
     )}
     {...props}
@@ -152,6 +152,8 @@ const CommandShortcut = ({
 };
 CommandShortcut.displayName = "CommandShortcut";
 
+const CommandLoading = CommandLoadingPrimitive;
+
 export {
   Command,
   CommandDialog,
@@ -162,4 +164,5 @@ export {
   CommandItem,
   CommandShortcut,
   CommandSeparator,
+  CommandLoading,
 };

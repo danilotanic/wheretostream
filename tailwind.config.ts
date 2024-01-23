@@ -40,8 +40,20 @@ export default {
             opacity: "0.25",
           },
         },
+        blink: {
+          "0%": {
+            opacity: "1",
+          },
+          "50%": {
+            opacity: "0",
+          },
+          "100%": {
+            opacity: "1",
+          },
+        },
       },
       animation: {
+        blink: "blink 0.5s step-end infinite",
         "accordion-up": "accordion-up 0.2s ease-out",
         "accordion-down": "accordion-down 0.2s ease-out",
         "activity-indicator": "activity-indicator linear infinite",

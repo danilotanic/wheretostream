@@ -34,7 +34,10 @@ export default function Index() {
         className="flex w-full wrapper items-center gap-2 py-20 flex-1"
       >
         <h1 className="flex-shrink-0">Where to stream</h1>
-        <span className="text-2xl text-neutral-400">e.g. the godfather</span>
+        <span className="text-2xl text-neutral-400 flex items-center">
+          <span className="block w-[1px] h-8 animate-blink bg-black" />
+          e.g. the godfather
+        </span>
       </button>
 
       <Tabs defaultValue={filter || "now_playing"}>

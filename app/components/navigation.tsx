@@ -11,7 +11,7 @@ export default function Navigation() {
 
   return (
     <nav className="wrapper w-full py-7 flex items-center">
-      <div className="w-24">
+      <div className="w-24 min-h-9">
         <Link to="/">
           <Logo />
         </Link>
@@ -21,7 +21,7 @@ export default function Navigation() {
         <>
           <button
             onClick={() => setOpen(true)}
-            className="py-2 flex items-center gap-2 justify-center px-4 w-full max-w-xs mx-auto text-neutral-600 bg-neutral-200 rounded-lg text-sm"
+            className="py-2 flex items-center gap-2 justify-center px-4 w-full max-w-xs mx-auto text-neutral-600 bg-neutral-100 rounded-lg text-sm"
           >
             <SearchIcon className="size-4" />
             Search movies or series...
