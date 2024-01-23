@@ -1,4 +1,4 @@
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useNavigate } from "@remix-run/react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   CommandDialog,
@@ -36,9 +36,8 @@ export default function SearchProvider({
 }
 
 export function SearchDialog() {
-  const [value, setValue] = useState("");
+  const navigate = useNavigate();
   const { open, setOpen } = useSearchContext();
-
   const search = useFetcher<Array<MovieResult | TvResult>>();
 
   useEffect(() => {
@@ -56,27 +55,42 @@ export function SearchDialog() {
     <CommandDialog
       open={open}
       onOpenChange={setOpen}
-      commandProps={{
-        value,
-        onValueChange: (v) => setValue(v),
-      }}
+      commandProps={{ shouldFilter: false, className: "w-full" }}
     >
       <CommandInput
         onValueChange={(value) => search.load(`/api/search?q=${value}`)}
       />
-      <div className="flex items-start">
-        <CommandList className="w-2/5">
-          {search.data &&
-            search.data.length > 0 &&
-            search.data.map((item) => (
-              <CommandItem key={item.id} value={`${item.id}`}>
+      <CommandList className="command-list">
+        {search.data?.slice(0, 6).map((item) => (
+          <CommandItem
+            key={item.id}
+            value={`item-${item.id}`}
+            className="h-40 group cursor-pointer flex items-start gap-2"
+            onSelect={() => {
+              navigate(`/${item.media_type}/${item.id}`);
+              setOpen(false);
+            }}
+          >
+            <img
+              alt="Poster"
+              src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
+              className="h-full rounded-2xl"
+            />
+            <div className="size-full rounded-xl p-4 group-aria-selected:bg-neutral-100">
+              <time className="text-xs text-neutral-600">
+                {"release_date" in item
+                  ? new Date(item.release_date ?? "").getFullYear()
+                  : "first_air_date" in item
+                  ? new Date(item.first_air_date ?? "").getFullYear()
+                  : "N/A"}
+              </time>
+              <span className="block">
                 {"title" in item ? item.title : (item as TvResult).name}
-              </CommandItem>
-            ))}
-        </CommandList>
-        <hr className="w-[1px] h-full bg-neutral-200" />
-        <div>Preview</div>
-      </div>
+              </span>
+            </div>
+          </CommandItem>
+        ))}
+      </CommandList>
     </CommandDialog>
   );
 }

@@ -20,6 +20,10 @@
     @apply max-w-5xl mx-auto px-4;
   }
 
+  .command-list > div {
+    @apply grid grid-cols-3;
+  }
+
   /* Make clicks pass-through */
   #nprogress {
     pointer-events: none;
