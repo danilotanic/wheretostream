@@ -37,8 +37,13 @@ export default function SearchProvider({
 
 export function SearchDialog() {
   const navigate = useNavigate();
+  const [key, setKey] = useState(() => Math.random().toString());
   const { open, setOpen } = useSearchContext();
-  const search = useFetcher<Array<MovieResult | TvResult>>();
+  const search = useFetcher<Array<MovieResult | TvResult>>({ key });
+
+  function resetFetcher() {
+    setKey(Math.random().toString());
+  }
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -69,6 +74,7 @@ export function SearchDialog() {
             onSelect={() => {
               navigate(`/${item.media_type}/${item.id}`);
               setOpen(false);
+              resetFetcher();
             }}
           >
             <img
