@@ -145,9 +145,9 @@ export default function Movie() {
                                     to={country.subscription.link}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex justify-end"
+                                    className="text-sm flex items-center whitespace-nowrap px-2 py-1 hover:border-black transition-colors border border-neutral-200 rounded-md"
                                   >
-                                    <ArrowUpRightIcon />
+                                    Stream <ArrowUpRightIcon size={16} />
                                   </Link>
                                 ) : null}
                               </TableCell>

@@ -48,6 +48,7 @@ export function transformData(data: RapidAPIResponse): StreamingResponse {
           slug: provider.service,
           logo: `https://www.movieofthenight.com/static/image/icon/service/${provider.service}.svg`,
           countries: [],
+          attributes: [],
         });
       }
 
@@ -58,6 +59,7 @@ export function transformData(data: RapidAPIResponse): StreamingResponse {
 
       // Get the index of the country and add either the buy, rent or stream option
       const providerCountries = transformed[providerIndex].countries;
+      const providerAttributes = transformed[providerIndex].attributes;
       const countryIndex = providerCountries.findIndex(
         (c) => c.code === countryCode
       );
@@ -73,6 +75,10 @@ export function transformData(data: RapidAPIResponse): StreamingResponse {
           },
         };
         providerCountries.push(newData);
+
+        if (!providerAttributes.includes(provider.streamingType)) {
+          providerAttributes.push(provider.streamingType);
+        }
       } else {
         // If the country already exists, update it with new type data
         providerCountries[countryIndex] = {
@@ -83,6 +89,10 @@ export function transformData(data: RapidAPIResponse): StreamingResponse {
             availableSince: provider.availableSince,
           },
         };
+
+        if (!providerAttributes.includes(provider.streamingType)) {
+          providerAttributes.push(provider.streamingType);
+        }
       }
     });
   }

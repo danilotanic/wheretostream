@@ -19,6 +19,7 @@ export type StreamingResponse = Array<Provider>;
 export type Provider = {
   slug: string;
   logo: string;
+  attributes: Array<string>;
   countries: Array<Country>;
 };
 
