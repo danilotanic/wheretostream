@@ -7,7 +7,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandLoading,
 } from "~/components/ui/command";
 import { MovieResult, TvResult } from "~/utils/api/moviedb.types";
 

@@ -53,7 +53,7 @@ export default {
         },
       },
       animation: {
-        blink: "blink 0.5s step-end infinite",
+        blink: "blink 1s step-end infinite",
         "accordion-up": "accordion-up 0.2s ease-out",
         "accordion-down": "accordion-down 0.2s ease-out",
         "activity-indicator": "activity-indicator linear infinite",
