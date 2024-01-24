@@ -98,6 +98,7 @@ export interface MovieResult {
   vote_count?: number;
   video?: boolean;
   vote_average?: number;
+  countries?: number;
 }
 
 export interface TvResult {
