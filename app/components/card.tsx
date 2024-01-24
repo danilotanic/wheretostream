@@ -13,10 +13,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          "bg-white group rounded-3xl text-neutral-500 duration-500 hover:duration-100 hover:bg-neutral-200/50 transition-colors",
-          className
-        )}
+        className={cn("bg-white group rounded-3xl text-neutral-500", className)}
         {...props}
       >
         <header className="flex gap-4 justify-between p-4">

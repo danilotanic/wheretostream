@@ -102,7 +102,7 @@ export default function Movie() {
                             )}
                           >
                             <img
-                              className="size-16 rounded-xl mb-2"
+                              className="size-[60px] rounded-xl mb-2"
                               src={`/assets/providers/${provider.slug}.png`}
                               alt={provider.slug}
                             />

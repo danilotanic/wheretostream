@@ -1,4 +1,9 @@
-import { Link, LinkProps, useSearchParams } from "@remix-run/react";
+import {
+  Link,
+  LinkProps,
+  useLocation,
+  useSearchParams,
+} from "@remix-run/react";
 import { SearchIcon } from "lucide-react";
 import Logo from "~/components/logo";
 import { useSearchContext } from "~/components/search";
@@ -18,9 +23,13 @@ function NavLink(props: LinkProps & { active?: boolean }) {
 }
 
 export default function Navigation() {
+  const location = useLocation();
   const { setOpen } = useSearchContext();
   const [searchParams] = useSearchParams();
-  const currentFilter = searchParams.get("filter") || "nowPlaying";
+  const currentFilter =
+    location.pathname === "/"
+      ? searchParams.get("filter") || "nowPlaying"
+      : null;
 
   return (
     <nav

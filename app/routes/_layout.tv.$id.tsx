@@ -102,7 +102,11 @@ export default function Movie() {
                             to={`?provider=${provider.slug}`}
                             className="!flex flex-col after:!hidden bg-neutral-100 rounded-2xl !p-4 data-[state=active]:bg-neutral-200"
                           >
-                            <span className="w-16 h-16 mb-2 rounded-xl bg-black" />
+                            <img
+                              className="size-[60px] rounded-xl mb-2"
+                              src={`/assets/providers/${provider.slug}.png`}
+                              alt={provider.slug}
+                            />
                             <span className="capitalize">{provider.slug}</span>
                             <span className="text-neutral-600 dark:text-neutral-400 text-sm">
                               {provider.countries.length} Countries
