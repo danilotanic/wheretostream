@@ -25,11 +25,10 @@ export default function Navigation() {
   return (
     <nav
       className={cn(
-        "p-6 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 grid grid-cols-3"
-        // "after:absolute after:top-[88px] after:left-6 after:hidden after:h-10 after:w-5 after:rounded-tl-2xl after:bg-white after:shadow-[0_-25px_0_0] after:shadow-neutral-100 dark:after:bg-neutral-800  dark:after:shadow-neutral-900 lg:after:block"
+        "p-6 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 grid-container"
       )}
     >
-      <ul className="flex items-center">
+      <ul className="flex items-center xl:col-span-2 lg:col-span-[1.5] col-span-1">
         <li>
           <Link to="/" className="pr-3 block">
             <Logo />
@@ -68,11 +67,11 @@ export default function Navigation() {
         onClick={() => setOpen(true)}
         className="flex items-center gap-2 py-1.5 justify-center px-4 w-full max-w-xs mx-auto text-neutral-600 bg-neutral-200 rounded-lg text-sm"
       >
-        <SearchIcon className="size-4" />
+        <SearchIcon className="size-4 flex-shrink-0" />
         Search movies or series...
       </button>
 
-      <div className="flex justify-end items-center">
+      <div className="flex justify-end items-center xl:col-span-2 col-span-1">
         <Link
           target="_blank"
           rel="noreferrer"

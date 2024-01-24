@@ -26,7 +26,7 @@ export default function Home() {
   const currentList = data[filter ?? "nowPlaying"];
 
   return (
-    <section className="grid grid-cols-5 gap-[2px] px-6">
+    <section className="grid-container px-6">
       {currentList.results && currentList.results.length > 0 ? (
         <>
           {currentList.results.map((movie) => (

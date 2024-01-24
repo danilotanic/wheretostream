@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { humanReadableTime } from "~/utils";
+import { cn, humanReadableTime } from "~/utils";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
 import { getMovie } from "~/utils/api/movie.server";
 import ActivityIndicator from "~/components/activityIndicator";
@@ -97,14 +97,16 @@ export default function Movie() {
                           <Link
                             preventScrollReset
                             to={`?provider=${provider.slug}`}
-                            className="!flex flex-col after:!hidden bg-neutral-100 rounded-2xl !p-4 data-[state=active]:bg-neutral-200"
+                            className={cn(
+                              "!flex data-[state=active]:bg-neutral-100 flex-col rounded-2xl !p-4"
+                            )}
                           >
                             <img
                               className="size-16 rounded-xl mb-2"
                               src={`/assets/providers/${provider.slug}.png`}
                               alt={provider.slug}
                             />
-                            {/* <span className="capitalize">{provider.slug}</span> */}
+                            <span className="capitalize">{provider.slug}</span>
                             <span className="text-neutral-600 dark:text-neutral-400 text-sm">
                               {provider.countries.length} Countries
                             </span>
