@@ -13,10 +13,18 @@ import styles from "./tailwind.css";
 import NProgress from "nprogress";
 import { useEffect, useRef } from "react";
 import SearchProvider from "~/components/search";
+import woff2 from "../public/assets/fonts/SuisseIntl-Regular-WebM.woff2";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  {
+    rel: "preload",
+    href: woff2,
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous",
+  },
 ];
 
 export default function App() {
@@ -56,7 +64,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="bg-white dark:bg-black text-black dark:text-white">
+      <body className="bg-neutral-100 text-sm antialiased font-sans text-black">
         <SearchProvider>
           <Outlet />
         </SearchProvider>
