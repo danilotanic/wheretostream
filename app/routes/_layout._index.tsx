@@ -15,6 +15,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const popular = await context.env.KV.get("popular", { type: "json" });
   const upcoming = await context.env.KV.get("upcoming", { type: "json" });
 
+  // const nowPlaying = await getList({ id: ListType.NowPlaying, context });
+  // const popular = await getList({ id: ListType.Popular, context });
+  // const upcoming = await getList({ id: ListType.Upcoming, context });
+
   return json({ filter, nowPlaying, popular, upcoming });
 }
 
@@ -24,6 +28,8 @@ export default function Home() {
 
   const data = { nowPlaying, popular, upcoming };
   const currentList = data[filter ?? "nowPlaying"];
+
+  console.log(JSON.stringify(upcoming));
 
   return (
     <section className="grid-container px-6">

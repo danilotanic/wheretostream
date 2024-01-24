@@ -34,25 +34,47 @@ async function processMovies(
   }
 }
 
+type DiscoverMovieResponseWithLastUpdate = DiscoverMovieResponse & {
+  lastUpdate: number;
+};
+
 export async function loader({ context }: LoaderFunctionArgs) {
-  const nowPlaying = await getList({ id: ListType.NowPlaying, context });
-  const popular = await getList({ id: ListType.Popular, context });
-  const upcoming = await getList({ id: ListType.Upcoming, context });
+  // Get the last data from the KV store
+  const nowPlaying = (await context.env.KV.get("nowPlaying", {
+    type: "json",
+  })) as DiscoverMovieResponseWithLastUpdate;
+  const popular = (await context.env.KV.get("popular", {
+    type: "json",
+  })) as DiscoverMovieResponseWithLastUpdate;
+  const upcoming = (await context.env.KV.get("upcoming", {
+    type: "json",
+  })) as DiscoverMovieResponseWithLastUpdate;
 
-  if (nowPlaying.results) {
-    await processMovies(nowPlaying.results, context);
-    context.env.KV.put("nowPlaying", JSON.stringify(nowPlaying));
+  // Get all the dates
+  const dates = [
+    { id: "nowPlaying", date: nowPlaying.lastUpdate },
+    { id: "popular", date: popular.lastUpdate },
+    { id: "upcoming", date: upcoming.lastUpdate },
+  ];
+
+  // Get the least recent date
+  const leastRecentDateId = dates.reduce((prev, current) => {
+    return prev.date < current.date ? prev : current;
+  });
+
+  // Get the list with the least recent date
+  const list = await getList({ id: leastRecentDateId.id as ListType, context });
+
+  // Process the movies
+  if (list.results) {
+    await processMovies(list.results, context);
+
+    // Update the KV store with the new data
+    context.env.KV.put(
+      leastRecentDateId.id,
+      JSON.stringify({ ...list, lastUpdate: new Date().getTime() })
+    );
   }
 
-  if (popular.results) {
-    await processMovies(popular.results, context);
-    context.env.KV.put("popular", JSON.stringify(popular));
-  }
-
-  if (upcoming.results) {
-    await processMovies(upcoming.results, context);
-    context.env.KV.put("upcoming", JSON.stringify(upcoming));
-  }
-
-  return json({ status: "ok" });
+  return json({ status: "ok", updated: leastRecentDateId.id });
 }

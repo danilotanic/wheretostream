@@ -70,7 +70,7 @@ const CommandList = React.forwardRef<
   <CommandPrimitive.List
     ref={ref}
     className={cn(
-      "min-h-[320px] transition-[height] h-[var(--cmdk-list-height)] overflow-y-auto overflow-x-hidden",
+      "transition-[height] h-[var(--cmdk-list-height)] overflow-y-auto overflow-x-hidden",
       className
     )}
     {...props}
