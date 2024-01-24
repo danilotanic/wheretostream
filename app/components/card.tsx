@@ -13,7 +13,10 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={cn("bg-white group rounded-3xl text-neutral-500", className)}
+        className={cn(
+          "bg-white group rounded-3xl text-neutral-500 duration-500 hover:duration-100 hover:bg-neutral-200/40 transition-colors",
+          className
+        )}
         {...props}
       >
         <header className="flex gap-4 justify-between p-4">
@@ -29,7 +32,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
             <img
               alt={`${movie.title} poster`}
               src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-              className="block h-full mx-auto rounded-2xl group-hover:shadow-none transition-shadow shadow-2xl shadow-black/35"
+              className="block h-full mx-auto rounded-2xl shadow-2xl shadow-black/35"
             />
           </Link>
         </div>

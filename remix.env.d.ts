@@ -11,6 +11,7 @@ declare module "@remix-run/server-runtime" {
       TMDB_API_KEY: string;
       RAPID_API_KEY: string;
       RAPID_API_HOST: string;
+      KV: KVNamespace;
     };
   }
 }
