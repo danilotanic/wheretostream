@@ -6,7 +6,7 @@ import { SearchDialog } from "~/components/search";
 export default function AppLayout() {
   return (
     <main className="flex min-h-screen flex-col">
-      <div className="flex-1 w-screen">
+      <div className="flex-1 w-screen overflow-x-hidden flex flex-col">
         <Navigation />
         <Outlet />
       </div>

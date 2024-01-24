@@ -1,7 +1,6 @@
 import { LoaderFunctionArgs, defer } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
-import ActivityIndicator from "~/components/activityIndicator";
 import Country from "~/components/table/country";
 import Price from "~/components/table/price";
 import {
@@ -15,7 +14,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { humanReadableTime } from "~/utils";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
-import { getShow } from "~/utils/api/tv.server";
+import { getMovie } from "~/utils/api/movie.server";
+import ActivityIndicator from "~/components/activityIndicator";
+import { ArrowUpRightIcon } from "lucide-react";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const { id } = params;
@@ -25,11 +26,11 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
 
   const streamingInfo = getSteamingInfo({
     id: Number(id),
-    type: "tv",
+    type: "movie",
     context,
   });
 
-  const details = await getShow({ id: Number(id), context });
+  const details = await getMovie({ id: Number(id), context });
 
   return defer({ provider, details, streamingInfo });
 }
@@ -42,31 +43,27 @@ export default function Movie() {
   } = useLoaderData<typeof loader>();
 
   return (
-    <div className="w-full px-6">
-      <div className="bg-white rounded-3xl p-4">
+    <div className="wrapper w-full px-4">
+      <div className="border border-neutral-200 rounded-3xl p-4">
         <header className="grid grid-cols-3 text-sm text-neutral-600 dark:text-neutral-400 justify-between">
-          <h1 className="text-sm truncate">{details.name}</h1>
+          <h1 className="text-sm truncate">{details.title}</h1>
           <ul className="flex justify-center items-center gap-4">
             {details.genres?.map((genre) => (
               <li key={genre.id}>{genre.name}</li>
             ))}
             <li>
-              {details.episode_run_time
-                ? `~${humanReadableTime(
-                    details.last_episode_to_air?.runtime ?? 0
-                  )}`
-                : "N/A"}
+              {details.runtime ? humanReadableTime(details.runtime) : "N/A"}
             </li>
           </ul>
           <time className="text-right">
-            {details.first_air_date
-              ? new Date(details.first_air_date).getFullYear()
+            {details.release_date
+              ? new Date(details.release_date).getFullYear()
               : "N/A"}
           </time>
         </header>
         <div className="h-56 p-4">
           <img
-            alt={`${details.name} poster`}
+            alt={`${details.title} poster`}
             src={`https://image.tmdb.org/t/p/w500/${details.poster_path}`}
             className="block h-full mx-auto rounded-2xl shadow-2xl"
           />
@@ -102,8 +99,12 @@ export default function Movie() {
                             to={`?provider=${provider.slug}`}
                             className="!flex flex-col after:!hidden bg-neutral-100 rounded-2xl !p-4 data-[state=active]:bg-neutral-200"
                           >
-                            <span className="w-16 h-16 mb-2 rounded-xl bg-black" />
-                            <span className="capitalize">{provider.slug}</span>
+                            <img
+                              className="size-16 rounded-xl mb-2"
+                              src={`/assets/providers/${provider.slug}.png`}
+                              alt={provider.slug}
+                            />
+                            {/* <span className="capitalize">{provider.slug}</span> */}
                             <span className="text-neutral-600 dark:text-neutral-400 text-sm">
                               {provider.countries.length} Countries
                             </span>
@@ -142,7 +143,16 @@ export default function Movie() {
                                   ) : null}
                                 </TableCell>
                                 <TableCell className="w-1/3">
-                                  {country.subscription?.availableSince}
+                                  {country.subscription ? (
+                                    <Link
+                                      to={country.subscription.link}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-sm flex items-center whitespace-nowrap px-2 py-1 hover:border-black transition-colors border border-neutral-200 rounded-md"
+                                    >
+                                      Stream <ArrowUpRightIcon size={16} />
+                                    </Link>
+                                  ) : null}
                                 </TableCell>
                               </TableRow>
                             ))}

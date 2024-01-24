@@ -13,12 +13,12 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          "border border-neutral-100 rounded-3xl w-[320px] h-[580px] hover:bg-neutral-100 transition-colors",
+          "bg-white rounded-3xl text-neutral-500 hover:bg-neutral-200/50 transition-colors",
           className
         )}
         {...props}
       >
-        <header className="flex gap-4 text-sm text-neutral-600 dark:text-neutral-400 justify-between px-5 py-4">
+        <header className="flex gap-4 justify-between p-4">
           <h3 className="truncate">{movie.title}</h3>
           <time>
             {movie.release_date
@@ -26,15 +26,19 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
               : "N/A"}
           </time>
         </header>
-        <div className="h-56 p-4">
+        <div className="h-[260px] p-4">
           <Link to={`/movie/${movie.id}`}>
             <img
               alt={`${movie.title} poster`}
               src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-              className="block h-full mx-auto rounded-2xl shadow-2xl"
+              className="block h-full mx-auto rounded-2xl shadow-2xl shadow-black/35"
             />
           </Link>
         </div>
+        <footer className="flex justify-between p-4">
+          <span>Streaming in 12 countries</span>
+          <span className="text-black">See where</span>
+        </footer>
       </div>
     );
   }

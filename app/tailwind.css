@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+  @font-face {
+    font-family: "Suisse Intl";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/build/_assets/SuisseIntl-Regular-WebM-YQWLJFIG.woff2")
+      format("woff2");
+  }
+
   h1,
   h2,
   h3,
@@ -14,10 +23,6 @@
 
   h1 {
     @apply text-2xl;
-  }
-
-  .wrapper {
-    @apply mx-auto px-4;
   }
 
   .command-list > div {
