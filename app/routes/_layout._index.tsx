@@ -11,9 +11,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const filter = (url.searchParams.get("filter") as ListType) ?? undefined;
 
-  const nowPlaying = await context.env.KV.get("nowPlaying");
-  const popular = await context.env.KV.get("popular");
-  const upcoming = await context.env.KV.get("upcoming");
+  const nowPlaying = await context.env.KV.get("nowPlaying", { type: "json" });
+  const popular = await context.env.KV.get("popular", { type: "json" });
+  const upcoming = await context.env.KV.get("upcoming", { type: "json" });
 
   return json({ filter, nowPlaying, popular, upcoming });
 }
