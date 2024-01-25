@@ -2,6 +2,7 @@ import { LoaderFunctionArgs, defer } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
+import Error from "~/components/error";
 import Country from "~/components/table/country";
 import Price from "~/components/table/price";
 import {
@@ -31,7 +32,10 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
 
   const details = await getShow({ id: Number(id), context });
 
-  return defer({ provider, details, streamingInfo });
+  return defer(
+    { provider, details, streamingInfo },
+    { headers: { "Cache-Control": "max-age=3600, public" } }
+  );
 }
 
 export default function Movie() {
@@ -82,7 +86,7 @@ export default function Movie() {
             </div>
           }
         >
-          <Await resolve={providers}>
+          <Await resolve={providers} errorElement={<Error />}>
             {(providers) => (
               <>
                 {providers.length > 0 ? (

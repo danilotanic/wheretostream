@@ -15,7 +15,7 @@ function NavLink(props: LinkProps & { active?: boolean }) {
       {...props}
       className={cn(
         "after:absolute relative after:bottom-0 after:left-1/2 after:-ml-[2px] after:w-1 after:h-1 after:hidden after:bg-black after:rounded-full",
-        props.active && "after:block",
+        { "after:block": props.active },
         props.className
       )}
     />
@@ -46,6 +46,7 @@ export default function Navigation() {
         <li>
           <NavLink
             to="/"
+            prefetch="intent"
             className="px-3 py-2 block"
             active={currentFilter === "nowPlaying"}
           >
@@ -54,6 +55,7 @@ export default function Navigation() {
         </li>
         <li>
           <NavLink
+            prefetch="intent"
             to="/?filter=popular"
             className="px-3 py-2 block"
             active={currentFilter === "popular"}
@@ -63,6 +65,7 @@ export default function Navigation() {
         </li>
         <li>
           <NavLink
+            prefetch="intent"
             to="/?filter=upcoming"
             className="px-3 py-2 block"
             active={currentFilter === "upcoming"}
@@ -74,7 +77,7 @@ export default function Navigation() {
 
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 py-1.5 justify-center px-4 w-full max-w-xs mx-auto text-neutral-600 bg-neutral-200 rounded-lg text-sm"
+        className="flex items-center gap-2 py-1.5 justify-center px-4 w-full max-w-xs mx-auto text-neutral-600 bg-neutral-200/70 rounded-full text-sm"
       >
         <SearchIcon className="size-4 flex-shrink-0" />
         Search movies or series...

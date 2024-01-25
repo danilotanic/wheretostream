@@ -17,6 +17,7 @@ import { getSteamingInfo } from "~/utils/api/streaming.server";
 import { getMovie } from "~/utils/api/movie.server";
 import ActivityIndicator from "~/components/activityIndicator";
 import { ArrowUpRightIcon } from "lucide-react";
+import Error from "~/components/error";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const { id } = params;
@@ -32,7 +33,10 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
 
   const details = await getMovie({ id: Number(id), context });
 
-  return defer({ provider, details, streamingInfo });
+  return defer(
+    { provider, details, streamingInfo },
+    { headers: { "Cache-Control": "max-age=3600, public" } }
+  );
 }
 
 export default function Movie() {
@@ -61,16 +65,18 @@ export default function Movie() {
               : "N/A"}
           </time>
         </header>
-        <div className="h-56 p-4">
+        <div className="h-56 my-8">
           <img
             alt={`${details.title} poster`}
             src={`https://image.tmdb.org/t/p/w500/${details.poster_path}`}
             className="block h-full mx-auto rounded-2xl shadow-2xl"
           />
         </div>
-        <p className="mx-auto text-balance max-w-md text-center text-neutral-600 dark:text-neutral-400">
-          {details.overview}
-        </p>
+        {details.overview ? (
+          <p className="mx-auto text-balance max-w-md text-center text-neutral-600 dark:text-neutral-400">
+            {details.overview}
+          </p>
+        ) : null}
 
         <Suspense
           fallback={
@@ -79,12 +85,12 @@ export default function Movie() {
             </div>
           }
         >
-          <Await resolve={providers}>
+          <Await resolve={providers} errorElement={<Error />}>
             {(providers) => (
               <>
                 {providers.length > 0 ? (
                   <Tabs
-                    className="mt-10 w-full max-w-xl mx-auto"
+                    className="mt-8 w-full max-w-xl mx-auto"
                     defaultValue={provider ?? providers?.[0]?.slug}
                   >
                     <TabsList className="flex gap-2 items-center justify-center">
@@ -102,11 +108,13 @@ export default function Movie() {
                             )}
                           >
                             <img
+                              alt={provider.slug}
                               className="size-[60px] rounded-xl mb-2"
                               src={`/assets/providers/${provider.slug}.png`}
-                              alt={provider.slug}
                             />
-                            <span className="capitalize">{provider.slug}</span>
+                            <span className="capitalize font-medium">
+                              {provider.slug}
+                            </span>
                             <span className="text-neutral-600 dark:text-neutral-400 text-sm">
                               {provider.countries.length} Countries
                             </span>

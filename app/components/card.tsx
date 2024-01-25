@@ -28,7 +28,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           </time>
         </header>
         <div className="h-[260px] p-4">
-          <Link to={`/movie/${movie.id}`}>
+          <Link to={`/movie/${movie.id}`} prefetch="intent">
             <img
               alt={`${movie.title} poster`}
               src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
