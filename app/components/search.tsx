@@ -8,6 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "~/components/ui/command";
+import { cn } from "~/utils";
 import { MovieResult, TvResult } from "~/utils/api/moviedb.types";
 
 type ContextProps = {
@@ -71,7 +72,11 @@ export function SearchDialog() {
       onOpenChange={setOpen}
       commandProps={{ shouldFilter: false, className: "w-full" }}
     >
-      <div className="flex items-center border-b px-3">
+      <div
+        className={cn("flex items-center px-3", {
+          "border-b": search.data && search.data.length > 0,
+        })}
+      >
         <SearchIcon className="mr-2 size-4 shrink-0 opacity-50" />
         <CommandInput
           className="flex-1"
@@ -82,44 +87,46 @@ export function SearchDialog() {
           <ActivityIndicator size={16} className="absolute right-7 top-[2px]" />
         ) : null}
       </div>
-      <CommandList className="command-list">
-        {search.data?.slice(0, 6).map((item) => (
-          <CommandItem
-            key={item.id}
-            value={`item-${item.id}`}
-            className="h-40 group cursor-pointer flex items-start gap-2"
-            onSelect={() => {
-              navigate(`/${item.media_type}/${item.id}`);
-              setOpen(false);
-              resetFetcher();
-            }}
-          >
-            {item.poster_path ? (
-              <img
-                alt="Poster"
-                src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
-                className="h-full flex-shrink-0 w-[100px] object-cover rounded-2xl"
-              />
-            ) : (
-              <div className="h-full flex-shrink-0 w-[100px] flex items-center justify-center bg-neutral-200 rounded-2xl">
-                <ImageIcon />
+      {search.data && search.data.length > 0 && (
+        <CommandList className="command-list">
+          {search.data.slice(0, 6).map((item) => (
+            <CommandItem
+              key={item.id}
+              value={`item-${item.id}`}
+              className="h-40 group cursor-pointer flex items-start gap-2"
+              onSelect={() => {
+                navigate(`/${item.media_type}/${item.id}`);
+                setOpen(false);
+                resetFetcher();
+              }}
+            >
+              {item.poster_path ? (
+                <img
+                  alt="Poster"
+                  src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
+                  className="h-full flex-shrink-0 w-[100px] object-cover rounded-2xl"
+                />
+              ) : (
+                <div className="h-full flex-shrink-0 w-[100px] flex items-center justify-center bg-neutral-200 rounded-2xl">
+                  <ImageIcon />
+                </div>
+              )}
+              <div className="size-full rounded-xl p-4 group-aria-selected:bg-neutral-100">
+                <time className="text-xs text-neutral-600">
+                  {"release_date" in item
+                    ? new Date(item.release_date ?? "").getFullYear()
+                    : "first_air_date" in item
+                    ? new Date(item.first_air_date ?? "").getFullYear()
+                    : "N/A"}
+                </time>
+                <span className="block">
+                  {"title" in item ? item.title : (item as TvResult).name}
+                </span>
               </div>
-            )}
-            <div className="size-full rounded-xl p-4 group-aria-selected:bg-neutral-100">
-              <time className="text-xs text-neutral-600">
-                {"release_date" in item
-                  ? new Date(item.release_date ?? "").getFullYear()
-                  : "first_air_date" in item
-                  ? new Date(item.first_air_date ?? "").getFullYear()
-                  : "N/A"}
-              </time>
-              <span className="block">
-                {"title" in item ? item.title : (item as TvResult).name}
-              </span>
-            </div>
-          </CommandItem>
-        ))}
-      </CommandList>
+            </CommandItem>
+          ))}
+        </CommandList>
+      )}
     </CommandDialog>
   );
 }

@@ -3,6 +3,12 @@ import { ListType, getList } from "~/utils/api/list.server";
 import { DiscoverMovieResponse } from "~/utils/api/moviedb.types";
 import { RapidAPIResponse } from "~/utils/api/rapidapi.types";
 
+async function wait() {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 2000);
+  });
+}
+
 async function processMovies(
   movies: DiscoverMovieResponse["results"],
   context: LoaderFunctionArgs["context"]
@@ -38,7 +44,48 @@ type DiscoverMovieResponseWithLastUpdate = DiscoverMovieResponse & {
   lastUpdate: number;
 };
 
+const fakeData = {
+  page: 1,
+  results: [],
+  total_pages: 1,
+  total_results: 1,
+};
+
 export async function loader({ context }: LoaderFunctionArgs) {
+  const storage = await context.env.KV.list();
+
+  // Check if nowPlaying, popular and upcoming are in the KV store
+  // If not, add them with fake data
+  if (
+    !storage.keys.find((key) => key.name === "nowPlaying") ||
+    !storage.keys.find((key) => key.name === "popular") ||
+    !storage.keys.find((key) => key.name === "upcoming")
+  ) {
+    await context.env.KV.put(
+      "nowPlaying",
+      JSON.stringify({
+        ...fakeData,
+        lastUpdate: new Date().getTime(),
+      })
+    );
+    await wait();
+    await context.env.KV.put(
+      "popular",
+      JSON.stringify({
+        ...fakeData,
+        lastUpdate: new Date().getTime(),
+      })
+    );
+    await wait();
+    await context.env.KV.put(
+      "upcoming",
+      JSON.stringify({
+        ...fakeData,
+        lastUpdate: new Date().getTime(),
+      })
+    );
+  }
+
   // Get the last data from the KV store
   const nowPlaying = (await context.env.KV.get("nowPlaying", {
     type: "json",
@@ -52,15 +99,17 @@ export async function loader({ context }: LoaderFunctionArgs) {
 
   // Get all the dates
   const dates = [
-    { id: "nowPlaying", date: nowPlaying.lastUpdate },
-    { id: "popular", date: popular.lastUpdate },
-    { id: "upcoming", date: upcoming.lastUpdate },
+    { id: "now_playing", date: Number(nowPlaying.lastUpdate) },
+    { id: "popular", date: Number(popular.lastUpdate) },
+    { id: "upcoming", date: Number(upcoming.lastUpdate) },
   ];
 
   // Get the least recent date
   const leastRecentDateId = dates.reduce((prev, current) => {
     return prev.date < current.date ? prev : current;
   });
+
+  console.log("Updating: ", leastRecentDateId.id);
 
   // Get the list with the least recent date
   const list = await getList({ id: leastRecentDateId.id as ListType, context });
@@ -70,10 +119,8 @@ export async function loader({ context }: LoaderFunctionArgs) {
     await processMovies(list.results, context);
 
     // Update the KV store with the new data
-    context.env.KV.put(
-      leastRecentDateId.id,
-      JSON.stringify({ ...list, lastUpdate: new Date().getTime() })
-    );
+    const data = JSON.stringify({ ...list, lastUpdate: new Date().getTime() });
+    await context.env.KV.put(leastRecentDateId.id, data);
   }
 
   return json({ status: "ok", updated: leastRecentDateId.id });

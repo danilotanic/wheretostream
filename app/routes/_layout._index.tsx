@@ -11,13 +11,17 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const filter = (url.searchParams.get("filter") as ListType) ?? undefined;
 
-  const nowPlaying = await context.env.KV.get("nowPlaying", { type: "json" });
-  const popular = await context.env.KV.get("popular", { type: "json" });
-  const upcoming = await context.env.KV.get("upcoming", { type: "json" });
+  let nowPlaying, popular, upcoming;
 
-  // const nowPlaying = await getList({ id: ListType.NowPlaying, context });
-  // const popular = await getList({ id: ListType.Popular, context });
-  // const upcoming = await getList({ id: ListType.Upcoming, context });
+  if (process.env.NODE_ENV !== "development") {
+    nowPlaying = await context.env.KV.get("nowPlaying", { type: "json" });
+    popular = await context.env.KV.get("popular", { type: "json" });
+    upcoming = await context.env.KV.get("upcoming", { type: "json" });
+  } else {
+    nowPlaying = await getList({ id: ListType.NowPlaying, context });
+    popular = await getList({ id: ListType.Popular, context });
+    upcoming = await getList({ id: ListType.Upcoming, context });
+  }
 
   return json({ filter, nowPlaying, popular, upcoming });
 }

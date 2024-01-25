@@ -37,7 +37,10 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           </Link>
         </div>
         <footer className="flex justify-between p-4">
-          <span>Streaming in 12 countries</span>
+          <span>
+            Streaming in {movie.countries ?? 0}{" "}
+            {(movie.countries ?? 0) === 1 ? `country` : `countries`}
+          </span>
           <span className="text-black flex translate-x-3 transition-transform group-hover:translate-x-0 items-center">
             See where{" "}
             <ChevronRightIcon className="size-4 transition-opacity opacity-0 group-hover:opacity-100" />
