@@ -1,23 +1,15 @@
 import { LoaderFunctionArgs, defer } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData } from "@remix-run/react";
+import { ArrowUpRightIcon } from "lucide-react";
 import { Suspense } from "react";
+import ActivityIndicator from "~/components/activityIndicator";
+import Error from "~/components/error";
+import Option, { OptionUnavailable } from "~/components/option";
 import Country from "~/components/table/country";
-import Price from "~/components/table/price";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { cn, humanReadableTime } from "~/utils";
-import { getSteamingInfo } from "~/utils/api/streaming.server";
 import { getMovie } from "~/utils/api/movie.server";
-import ActivityIndicator from "~/components/activityIndicator";
-import { ArrowUpRightIcon } from "lucide-react";
-import Error from "~/components/error";
+import { getSteamingInfo } from "~/utils/api/streaming.server";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const { id } = params;
@@ -116,7 +108,10 @@ export default function Movie() {
                               {provider.slug}
                             </span>
                             <span className="text-neutral-600 dark:text-neutral-400 text-sm">
-                              {provider.countries.length} Countries
+                              {provider.countries.length ?? 0}{" "}
+                              {(provider.countries.length ?? 0) === 1
+                                ? `country`
+                                : `countries`}
                             </span>
                           </Link>
                         </TabsTrigger>
@@ -125,49 +120,62 @@ export default function Movie() {
 
                     {providers.map((provider) => (
                       <TabsContent value={provider.slug} key={provider.slug}>
-                        <Table className="table-fixed">
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="w-full">
-                                Countries
-                              </TableHead>
-                              <TableHead className="w-1/3">Rent</TableHead>
-                              <TableHead className="w-1/3">Buy</TableHead>
-                              <TableHead className="w-1/3">Stream</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {provider.countries.map((country) => (
-                              <TableRow key={country.code}>
-                                <TableCell className="w-full">
-                                  <Country code={country.code} />
-                                </TableCell>
-                                <TableCell className="w-1/3">
+                        {provider.countries && provider.countries.length > 0 ? (
+                          <>
+                            <ul className="grid grid-cols-6 mb-4 text-xs gap-4 text-neutral-500">
+                              <li className="col-span-3">Countries</li>
+                              <li>Rent</li>
+                              <li>Buy</li>
+                              <li>Stream</li>
+                            </ul>
+                            <ul>
+                              {provider.countries.map((country) => (
+                                <li
+                                  key={country.code}
+                                  className="grid grid-cols-6 my-2 items-center gap-4"
+                                >
+                                  <Country
+                                    code={country.code}
+                                    className="col-span-3"
+                                  />
                                   {country.rent?.price ? (
-                                    <Price {...country.rent} />
-                                  ) : null}
-                                </TableCell>
-                                <TableCell className="w-1/3">
+                                    <Option
+                                      to={country.rent.link}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      {country.rent.price.formatted}
+                                    </Option>
+                                  ) : (
+                                    <OptionUnavailable />
+                                  )}
                                   {country.buy?.price ? (
-                                    <Price {...country.buy} />
-                                  ) : null}
-                                </TableCell>
-                                <TableCell className="w-1/3">
+                                    <Option
+                                      to={country.buy.link}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      {country.buy.price.formatted}
+                                    </Option>
+                                  ) : (
+                                    <OptionUnavailable />
+                                  )}
                                   {country.subscription ? (
-                                    <Link
+                                    <Option
                                       to={country.subscription.link}
                                       target="_blank"
                                       rel="noreferrer"
-                                      className="text-sm flex items-center whitespace-nowrap px-2 py-1 hover:border-black transition-colors border border-neutral-200 rounded-md"
                                     >
                                       Stream <ArrowUpRightIcon size={16} />
-                                    </Link>
-                                  ) : null}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
+                                    </Option>
+                                  ) : (
+                                    <OptionUnavailable />
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        ) : null}
                       </TabsContent>
                     ))}
                   </Tabs>

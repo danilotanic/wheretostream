@@ -1,11 +1,16 @@
-import { flag, name } from "country-emoji";
+import { name } from "country-emoji";
+import { cn } from "~/utils";
 
-export default function Country({ code }: { code: string }) {
+export default function Country({
+  code,
+  className,
+}: {
+  code: string;
+  className?: string;
+}) {
   return (
-    <div className="w-2/3 flex items-center gap-2">
-      <span className="w-8 h-8 rounded-full bg-white border border-neutral-100 flex items-center justify-center">
-        {flag(code)}
-      </span>
+    <div className={cn("w-2/3 flex items-center gap-2", className)}>
+      <img src={`/assets/flags/${code}.svg`} alt={name(code)} />
       {name(code)}
     </div>
   );
