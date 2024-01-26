@@ -10,7 +10,7 @@ export default function Country({
 }) {
   return (
     <div className={cn("w-2/3 flex items-center gap-2", className)}>
-      <img src={`/assets/flags/${code}.svg`} alt={name(code)} />
+      <img src={`/assets/flags/${code.toUpperCase()}.svg`} alt={name(code)} />
       {name(code)}
     </div>
   );
