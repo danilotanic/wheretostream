@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/cloudflare";
-import { ClientLoaderFunctionArgs, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import Card from "~/components/card";
 import { ListType, getList } from "~/utils/api/list.server";
 

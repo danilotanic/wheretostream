@@ -64,24 +64,24 @@ export async function loader({ context }: LoaderFunctionArgs) {
     await context.env.KV.put(
       "nowPlaying",
       JSON.stringify({
-        ...fakeData,
         lastUpdate: new Date().getTime(),
+        ...fakeData,
       })
     );
     await wait();
     await context.env.KV.put(
       "popular",
       JSON.stringify({
-        ...fakeData,
         lastUpdate: new Date().getTime(),
+        ...fakeData,
       })
     );
     await wait();
     await context.env.KV.put(
       "upcoming",
       JSON.stringify({
-        ...fakeData,
         lastUpdate: new Date().getTime(),
+        ...fakeData,
       })
     );
   }
@@ -119,7 +119,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
     await processMovies(list.results, context);
 
     // Update the KV store with the new data
-    const data = JSON.stringify({ ...list, lastUpdate: new Date().getTime() });
+    const data = JSON.stringify({ lastUpdate: new Date().getTime(), ...list });
     await context.env.KV.put(leastRecentDateId.id, data);
   }
 
