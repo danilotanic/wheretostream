@@ -3,8 +3,6 @@ import { Await, Link, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import Error from "~/components/error";
-import Country from "~/components/table/country";
-import Price from "~/components/table/price";
 import {
   Table,
   TableBody,
@@ -34,7 +32,7 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
 
   return defer(
     { provider, details, streamingInfo },
-    { headers: { "Cache-Control": "max-age=3600, public" } }
+    { headers: { "Cache-Control": "max-age=86400, public" } }
   );
 }
 

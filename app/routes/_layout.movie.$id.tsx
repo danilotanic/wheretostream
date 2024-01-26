@@ -1,13 +1,19 @@
 import { LoaderFunctionArgs, defer } from "@remix-run/cloudflare";
-import { Await, Link, useLoaderData } from "@remix-run/react";
+import { Await, useLoaderData } from "@remix-run/react";
 import { ArrowUpRightIcon } from "lucide-react";
 import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import Error from "~/components/error";
 import Option, { OptionUnavailable } from "~/components/option";
 import Country from "~/components/table/country";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { cn, humanReadableTime } from "~/utils";
+import TableHeader from "~/components/table/header";
+import Provider from "~/components/table/provider";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "~/components/ui/carousel";
+import { humanReadableTime } from "~/utils";
 import { getMovie } from "~/utils/api/movie.server";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
 
@@ -27,7 +33,7 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
 
   return defer(
     { provider, details, streamingInfo },
-    { headers: { "Cache-Control": "max-age=3600, public" } }
+    { headers: { "Cache-Control": "max-age=86400, public" } }
   );
 }
 
@@ -78,110 +84,94 @@ export default function Movie() {
           }
         >
           <Await resolve={providers} errorElement={<Error />}>
-            {(providers) => (
-              <>
-                {providers.length > 0 ? (
-                  <Tabs
-                    className="mt-8 w-full max-w-xl mx-auto"
-                    defaultValue={provider ?? providers?.[0]?.slug}
-                  >
-                    <TabsList className="flex gap-2 items-center justify-center">
-                      {providers.map((provider) => (
-                        <TabsTrigger
-                          key={provider.slug}
-                          value={provider.slug}
-                          asChild
-                        >
-                          <Link
-                            preventScrollReset
-                            to={`?provider=${provider.slug}`}
-                            className={cn(
-                              "!flex data-[state=active]:bg-neutral-100 flex-col rounded-2xl !p-4"
-                            )}
-                          >
-                            <img
-                              alt={provider.slug}
-                              className="size-[60px] rounded-xl mb-2"
-                              src={`/assets/providers/${provider.slug}.png`}
-                            />
-                            <span className="capitalize font-medium">
-                              {provider.slug}
-                            </span>
-                            <span className="text-neutral-600 dark:text-neutral-400 text-sm">
-                              {provider.countries.length ?? 0}{" "}
-                              {(provider.countries.length ?? 0) === 1
-                                ? `country`
-                                : `countries`}
-                            </span>
-                          </Link>
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
+            {(providers) => {
+              if (providers.length === 0) return null;
 
-                    {providers.map((provider) => (
-                      <TabsContent value={provider.slug} key={provider.slug}>
-                        {provider.countries && provider.countries.length > 0 ? (
-                          <>
-                            <ul className="grid grid-cols-6 mb-4 text-xs gap-4 text-neutral-500">
-                              <li className="col-span-3">Countries</li>
-                              <li>Rent</li>
-                              <li>Buy</li>
-                              <li>Stream</li>
-                            </ul>
-                            <ul className="-ml-2 -mr-1">
-                              {provider.countries.map((country) => (
-                                <li
-                                  key={country.code}
-                                  className="grid grid-cols-6 transition-colors duration-300 hover:duration-100 py-1 rounded-lg pl-2 pr-1 items-center gap-4 hover:bg-neutral-100"
+              const selected = providers.find(
+                (p) => p.slug === provider ?? providers?.[0]?.slug
+              );
+
+              return (
+                <>
+                  <div className="w-full max-w-xl mx-auto">
+                    <Carousel>
+                      <CarouselContent>
+                        {providers.map((provider) => (
+                          <CarouselItem
+                            className="basis-1/5"
+                            key={provider.slug}
+                          >
+                            <Provider {...provider} selected={selected?.slug} />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                    </Carousel>
+
+                    <div className="flex my-8 gap-2 items-center justify-center">
+                      {providers.map((provider) => (
+                        <Provider
+                          {...provider}
+                          key={provider.slug}
+                          selected={selected?.slug}
+                        />
+                      ))}
+                    </div>
+
+                    {selected?.countries && selected.countries.length > 0 ? (
+                      <>
+                        <TableHeader />
+                        <ul className="-ml-2 -mr-1">
+                          {selected.countries.map((country) => (
+                            <li
+                              key={country.code}
+                              className="grid grid-cols-6 transition-colors duration-300 hover:duration-100 py-1 rounded-lg pl-2 pr-1 items-center gap-4 hover:bg-neutral-100"
+                            >
+                              <Country
+                                code={country.code}
+                                className="col-span-3"
+                              />
+                              {country.rent?.price ? (
+                                <Option
+                                  to={country.rent.link}
+                                  target="_blank"
+                                  rel="noreferrer"
                                 >
-                                  <Country
-                                    code={country.code}
-                                    className="col-span-3"
-                                  />
-                                  {country.rent?.price ? (
-                                    <Option
-                                      to={country.rent.link}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                    >
-                                      {country.rent.price.formatted}
-                                    </Option>
-                                  ) : (
-                                    <OptionUnavailable />
-                                  )}
-                                  {country.buy?.price ? (
-                                    <Option
-                                      to={country.buy.link}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                    >
-                                      {country.buy.price.formatted}
-                                    </Option>
-                                  ) : (
-                                    <OptionUnavailable />
-                                  )}
-                                  {country.subscription ? (
-                                    <Option
-                                      to={country.subscription.link}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                    >
-                                      Stream <ArrowUpRightIcon size={16} />
-                                    </Option>
-                                  ) : (
-                                    <OptionUnavailable />
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          </>
-                        ) : null}
-                      </TabsContent>
-                    ))}
-                  </Tabs>
-                ) : null}
-              </>
-            )}
+                                  {country.rent.price.formatted}
+                                </Option>
+                              ) : (
+                                <OptionUnavailable />
+                              )}
+                              {country.buy?.price ? (
+                                <Option
+                                  to={country.buy.link}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {country.buy.price.formatted}
+                                </Option>
+                              ) : (
+                                <OptionUnavailable />
+                              )}
+                              {country.subscription ? (
+                                <Option
+                                  to={country.subscription.link}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  Stream <ArrowUpRightIcon size={16} />
+                                </Option>
+                              ) : (
+                                <OptionUnavailable />
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : null}
+                  </div>
+                </>
+              );
+            }}
           </Await>
         </Suspense>
       </div>
