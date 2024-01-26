@@ -88,14 +88,14 @@ export default function Movie() {
               if (providers.length === 0) return null;
 
               const selected = providers.find(
-                (p) => p.slug === provider ?? providers?.[0]?.slug
+                (p) => p.slug === (provider ?? providers?.[0]?.slug)
               );
 
               return (
                 <>
                   <div className="w-full max-w-xl mx-auto">
                     <Carousel>
-                      <CarouselContent>
+                      <CarouselContent className="flex justify-center">
                         {providers.map((provider) => (
                           <CarouselItem
                             className="basis-1/5"

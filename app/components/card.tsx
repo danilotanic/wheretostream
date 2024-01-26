@@ -30,6 +30,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
         <div className="h-[260px] p-4">
           <Link to={`/movie/${movie.id}`} prefetch="intent">
             <img
+              loading="lazy"
               alt={`${movie.title} poster`}
               src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               className="block h-full mx-auto rounded-2xl shadow-2xl shadow-black/35"
