@@ -31,7 +31,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           <Link to={`/movie/${movie.id}`} prefetch="intent">
             <img
               alt={`${movie.title} poster`}
-              src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               className="block h-full mx-auto rounded-2xl shadow-2xl shadow-black/35"
             />
           </Link>
