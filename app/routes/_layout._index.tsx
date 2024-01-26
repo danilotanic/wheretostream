@@ -2,6 +2,7 @@ import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import Card from "~/components/card";
 import { ListType, getList } from "~/utils/api/list.server";
+import { DiscoverMovieResponse } from "~/utils/api/moviedb.types";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Where to stream?" }];
@@ -30,10 +31,12 @@ export default function Home() {
   const { filter, nowPlaying, popular, upcoming } =
     useLoaderData<typeof loader>();
 
-  const data = { nowPlaying, popular, upcoming };
-  const currentList = data[filter ?? "nowPlaying"];
-
-  console.log(JSON.stringify(upcoming));
+  const data: Record<string, DiscoverMovieResponse> = {
+    nowPlaying: nowPlaying as DiscoverMovieResponse,
+    popular: popular as DiscoverMovieResponse,
+    upcoming: upcoming as DiscoverMovieResponse,
+  };
+  const currentList: DiscoverMovieResponse = data[filter ?? "nowPlaying"];
 
   return (
     <section className="grid-container px-6">

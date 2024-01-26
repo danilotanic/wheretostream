@@ -33,7 +33,7 @@ export function OptionUnavailable({
       <span
         {...rest}
         className={cn(
-          "text-sm inline-flex items-center whitespace-nowrap px-2 py-1 border border-neutral-200 rounded-lg text-neutral-400",
+          "text-sm inline-flex select-none items-center whitespace-nowrap px-2 py-1 border border-neutral-200 rounded-lg text-neutral-400",
           className
         )}
       >

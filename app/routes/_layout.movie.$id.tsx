@@ -128,11 +128,11 @@ export default function Movie() {
                               <li>Buy</li>
                               <li>Stream</li>
                             </ul>
-                            <ul>
+                            <ul className="-ml-2 -mr-1">
                               {provider.countries.map((country) => (
                                 <li
                                   key={country.code}
-                                  className="grid grid-cols-6 my-2 items-center gap-4"
+                                  className="grid grid-cols-6 transition-colors duration-300 hover:duration-100 py-1 rounded-lg pl-2 pr-1 items-center gap-4 hover:bg-neutral-100"
                                 >
                                   <Country
                                     code={country.code}
