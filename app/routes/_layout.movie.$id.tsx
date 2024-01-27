@@ -8,11 +8,7 @@ import Option, { OptionUnavailable } from "~/components/option";
 import Country from "~/components/table/country";
 import TableHeader from "~/components/table/header";
 import Provider from "~/components/table/provider";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "~/components/ui/carousel";
+import ProvidersCarousel from "~/components/table/providersCarousel";
 import { humanReadableTime } from "~/utils";
 import { getMovie } from "~/utils/api/movie.server";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
@@ -94,28 +90,25 @@ export default function Movie() {
               return (
                 <>
                   <div className="w-full max-w-xl mx-auto">
-                    <Carousel>
-                      <CarouselContent className="flex justify-center">
+                    {providers.length < 4 ? (
+                      <ul className="flex my-8 justify-center gap-2 items-center">
                         {providers.map((provider) => (
-                          <CarouselItem
-                            className="basis-1/5"
+                          <Provider
+                            {...provider}
                             key={provider.slug}
-                          >
-                            <Provider {...provider} selected={selected?.slug} />
-                          </CarouselItem>
+                            selected={selected?.slug}
+                            className="w-[132px]"
+                          />
                         ))}
-                      </CarouselContent>
-                    </Carousel>
+                      </ul>
+                    ) : null}
 
-                    <div className="flex my-8 gap-2 items-center justify-center">
-                      {providers.map((provider) => (
-                        <Provider
-                          {...provider}
-                          key={provider.slug}
-                          selected={selected?.slug}
-                        />
-                      ))}
-                    </div>
+                    {providers.length > 4 ? (
+                      <ProvidersCarousel
+                        selected={selected}
+                        providers={providers}
+                      />
+                    ) : null}
 
                     {selected?.countries && selected.countries.length > 0 ? (
                       <>

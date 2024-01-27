@@ -4,19 +4,27 @@ import { Provider as RapidProviderProps } from "~/utils/api/rapidapi.types";
 
 type ProviderProps = RapidProviderProps & {
   selected?: string;
+  className?: string;
 };
 
-export default function Provider({ slug, selected, countries }: ProviderProps) {
+export default function Provider({
+  slug,
+  selected,
+  countries,
+  className,
+}: ProviderProps) {
   return (
     <Link
       prefetch="intent"
       preventScrollReset
       to={`?provider=${slug}`}
       className={cn(
-        "!flex flex-shrink-0 min-w-[120px] text-center data-[state=active]:bg-neutral-100 flex-col rounded-2xl !p-4",
-        slug === selected ? "bg-neutral-200" : "bg-neutral-100"
+        "!flex flex-shrink-0 w-full text-center data-[state=active]:bg-neutral-100 flex-col rounded-2xl !p-4",
+        slug === selected ? "bg-neutral-100" : "",
+        className
       )}
     >
+      {/* <Flag code="US" /> */}
       <img
         alt={slug}
         className="size-[60px] mx-auto rounded-xl mb-2"

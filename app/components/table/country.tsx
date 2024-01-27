@@ -1,4 +1,5 @@
 import { name } from "country-emoji";
+import { CircleFlag } from "react-circle-flags";
 import { cn } from "~/utils";
 
 export default function Country({
@@ -10,7 +11,7 @@ export default function Country({
 }) {
   return (
     <div className={cn("w-2/3 flex items-center gap-2", className)}>
-      <img src={`/assets/flags/${code.toUpperCase()}.svg`} alt={name(code)} />
+      <CircleFlag countryCode={code} className="size-[18px]" />
       {name(code)}
     </div>
   );
