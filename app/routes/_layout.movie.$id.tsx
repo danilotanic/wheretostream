@@ -87,10 +87,12 @@ export default function Movie() {
                 (p) => p.slug === (provider ?? providers?.[0]?.slug)
               );
 
+              console.log(providers);
+
               return (
                 <>
                   <div className="w-full max-w-xl mx-auto">
-                    {providers.length < 4 ? (
+                    {providers.length <= 4 ? (
                       <ul className="flex my-8 justify-center gap-2 items-center">
                         {providers.map((provider) => (
                           <Provider
