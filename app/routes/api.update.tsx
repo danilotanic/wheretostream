@@ -57,7 +57,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
   const storage = await context.env.KV.list();
 
   // Initialization logic, ensure it's done only once
-  const categories = ["nowPlaying", "popular", "upcoming"];
+  const categories = ["now_playing", "popular", "upcoming"];
   for (const category of categories) {
     if (!storage.keys.find((key) => key.name === category)) {
       await context.env.KV.put(
