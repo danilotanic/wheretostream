@@ -54,73 +54,61 @@ const fakeData = {
 export async function loader({ context }: LoaderFunctionArgs) {
   const storage = await context.env.KV.list();
 
-  // Check if nowPlaying, popular and upcoming are in the KV store
-  // If not, add them with fake data
-  if (
-    !storage.keys.find((key) => key.name === "nowPlaying") ||
-    !storage.keys.find((key) => key.name === "popular") ||
-    !storage.keys.find((key) => key.name === "upcoming")
-  ) {
-    await context.env.KV.put(
-      "nowPlaying",
-      JSON.stringify({
-        lastUpdate: new Date().getTime(),
-        ...fakeData,
-      })
-    );
-    await wait();
-    await context.env.KV.put(
-      "popular",
-      JSON.stringify({
-        lastUpdate: new Date().getTime(),
-        ...fakeData,
-      })
-    );
-    await wait();
-    await context.env.KV.put(
-      "upcoming",
-      JSON.stringify({
-        lastUpdate: new Date().getTime(),
-        ...fakeData,
-      })
-    );
+  // Initialization logic, ensure it's done only once
+  const categories = ["nowPlaying", "popular", "upcoming"];
+  for (const category of categories) {
+    if (!storage.keys.find((key) => key.name === category)) {
+      await context.env.KV.put(
+        category,
+        JSON.stringify({
+          lastUpdate: new Date().getTime(),
+          ...fakeData,
+        })
+      );
+      await wait(); // Ensuring sequential initialization
+    }
   }
 
-  // Get the last data from the KV store
-  const nowPlaying = (await context.env.KV.get("nowPlaying", {
-    type: "json",
-  })) as DiscoverMovieResponseWithLastUpdate;
-  const popular = (await context.env.KV.get("popular", {
-    type: "json",
-  })) as DiscoverMovieResponseWithLastUpdate;
-  const upcoming = (await context.env.KV.get("upcoming", {
-    type: "json",
-  })) as DiscoverMovieResponseWithLastUpdate;
+  // Retrieve and compare last update times
+  const promises = categories.map((category) =>
+    context.env.KV.get(category, { type: "json" })
+  );
+  const [nowPlaying, popular, upcoming] = await Promise.all(promises);
 
-  // Get all the dates
   const dates = [
-    { id: "now_playing", date: Number(nowPlaying.lastUpdate) },
-    { id: "popular", date: Number(popular.lastUpdate) },
-    { id: "upcoming", date: Number(upcoming.lastUpdate) },
+    {
+      id: "now_playing",
+      date: Number(
+        (nowPlaying as DiscoverMovieResponseWithLastUpdate).lastUpdate
+      ),
+    },
+    {
+      id: "popular",
+      date: Number((popular as DiscoverMovieResponseWithLastUpdate).lastUpdate),
+    },
+    {
+      id: "upcoming",
+      date: Number(
+        (upcoming as DiscoverMovieResponseWithLastUpdate).lastUpdate
+      ),
+    },
   ];
 
-  // Get the least recent date
-  const leastRecentDateId = dates.reduce((prev, current) => {
-    return prev.date < current.date ? prev : current;
-  });
+  const leastRecentDateId = dates.reduce((prev, current) =>
+    prev.date < current.date ? prev : current
+  ).id;
 
-  console.log("Updating: ", leastRecentDateId.id);
+  console.log("Updating: ", leastRecentDateId);
 
-  // Get the list with the least recent date
-  const list = await getList({ id: leastRecentDateId.id as ListType, context });
+  // Get and process the list with the least recent date
+  const list = await getList({ id: leastRecentDateId as ListType, context });
 
-  // Process the movies
   if (list.results) {
     await processMovies(list.results, context);
 
     // Update the KV store with the new data
     const data = JSON.stringify({ lastUpdate: new Date().getTime(), ...list });
-    await context.env.KV.put(leastRecentDateId.id, data);
+    await context.env.KV.put(leastRecentDateId, data);
   }
 
   return json({ status: "ok", updated: leastRecentDateId.id });
