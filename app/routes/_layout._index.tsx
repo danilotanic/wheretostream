@@ -20,10 +20,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       }
     );
 
-    1706640130280;
-    1706640458903;
-    1706640497834;
-
     console.log(
       "server: ",
       data?.lastUpdate ?? "no data" + " filter: " + filter
