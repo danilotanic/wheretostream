@@ -5,7 +5,7 @@ import { RapidAPIResponse } from "~/utils/api/rapidapi.types";
 
 async function wait() {
   return new Promise((resolve) => {
-    setTimeout(resolve, 2000);
+    setTimeout(resolve, 1000);
   });
 }
 
@@ -26,6 +26,8 @@ async function processMovies(
       }
     );
     const raw: RapidAPIResponse = await response.json();
+
+    console.log(raw);
 
     // Check if raw.result and raw.result.streamingInfo are defined and raw.result.streamingInfo is an object
     if (
@@ -79,20 +81,24 @@ export async function loader({ context }: LoaderFunctionArgs) {
     {
       id: "now_playing",
       date: Number(
-        (nowPlaying as DiscoverMovieResponseWithLastUpdate).lastUpdate
+        (nowPlaying as DiscoverMovieResponseWithLastUpdate)?.lastUpdate
       ),
     },
     {
       id: "popular",
-      date: Number((popular as DiscoverMovieResponseWithLastUpdate).lastUpdate),
+      date: Number(
+        (popular as DiscoverMovieResponseWithLastUpdate)?.lastUpdate
+      ),
     },
     {
       id: "upcoming",
       date: Number(
-        (upcoming as DiscoverMovieResponseWithLastUpdate).lastUpdate
+        (upcoming as DiscoverMovieResponseWithLastUpdate)?.lastUpdate
       ),
     },
   ];
+
+  console.log("DATES: ", dates);
 
   const leastRecentDateId = dates.reduce((prev, current) =>
     prev.date < current.date ? prev : current
@@ -111,5 +117,5 @@ export async function loader({ context }: LoaderFunctionArgs) {
     await context.env.KV.put(leastRecentDateId, data);
   }
 
-  return json({ status: "ok", updated: leastRecentDateId.id });
+  return json({ status: "ok", updated: leastRecentDateId });
 }
