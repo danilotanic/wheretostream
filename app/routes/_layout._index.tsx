@@ -13,12 +13,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const filter = (url.searchParams.get("filter") as ListType) ?? undefined;
 
   if (process.env.NODE_ENV !== "development") {
-    const data: DiscoverMovieResponse = await context.env.KV.get(
+    const data: DiscoverMovieResponse | null = await context.env.KV.get(
       filter ?? ListType.NowPlaying,
       {
         type: "json",
       }
     );
+
+    console.log("server: ", data?.lastUpdate ?? "no data");
+
     return json(
       { filter, data },
       { headers: { "Cache-Control": "max-age=86400, public" } }
@@ -35,9 +38,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 export default function Home() {
   const { data } = useLoaderData<typeof loader>();
 
+  console.log("client: ", data?.lastUpdate ?? "no data");
+
   return (
     <section className="grid-container px-6">
-      {data.results && data.results.length > 0 ? (
+      {data?.results && data.results.length > 0 ? (
         <>
           {data.results.map((movie) => (
             <Card key={movie.id} movie={movie} />
