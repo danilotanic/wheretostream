@@ -20,7 +20,14 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       }
     );
 
-    console.log("server: ", data?.lastUpdate ?? "no data");
+    1706640130280;
+    1706640458903;
+    1706640497834;
+
+    console.log(
+      "server: ",
+      data?.lastUpdate ?? "no data" + " filter: " + filter
+    );
 
     return json(
       { filter, data },
@@ -36,9 +43,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 }
 
 export default function Home() {
-  const { data } = useLoaderData<typeof loader>();
+  const { data, filter } = useLoaderData<typeof loader>();
 
-  console.log("client: ", data?.lastUpdate ?? "no data");
+  console.log("client: ", data?.lastUpdate ?? "no data" + " filter: " + filter);
 
   return (
     <section className="grid-container px-6">
