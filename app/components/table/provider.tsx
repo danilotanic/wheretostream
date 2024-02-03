@@ -24,7 +24,6 @@ export default function Provider({
         className
       )}
     >
-      {/* <Flag code="US" /> */}
       <img
         alt={slug}
         className="size-[60px] mx-auto rounded-xl mb-2"

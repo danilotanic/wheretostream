@@ -11,6 +11,8 @@ export default function Option({ children, className, ...rest }: LinkProps) {
           "text-sm inline-flex items-center whitespace-nowrap px-2 py-1 hover:border-black transition-colors border border-neutral-200 rounded-lg",
           className
         )}
+        target="_blank"
+        rel="noopener noreferrer"
       >
         {children}
       </Link>
