@@ -57,7 +57,7 @@ export default function Movie() {
             <li>
               {details.episode_run_time
                 ? `~${humanReadableTime(
-                    details.last_episode_to_air?.runtime ?? 0
+                    Number(details.last_episode_to_air?.runtime) ?? 0
                   )}`
                 : "N/A"}
             </li>

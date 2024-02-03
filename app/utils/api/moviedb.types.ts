@@ -259,7 +259,6 @@ export interface SimpleEpisode {
   still_path?: string;
   vote_average?: number;
   vote_count?: number;
-  runtime?: number;
 }
 
 export interface Network {
@@ -935,7 +934,7 @@ export interface ShowResponse extends Response {
   in_production?: boolean;
   languages?: string[];
   last_air_date?: string;
-  last_episode_to_air?: SimpleEpisode;
+  last_episode_to_air?: EpisodeResult;
   name?: string;
   next_episode_to_air?: null;
   networks?: Array<Network>;
