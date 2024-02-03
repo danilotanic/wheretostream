@@ -27,8 +27,6 @@ async function processMovies(
     );
     const raw: RapidAPIResponse = await response.json();
 
-    console.log(raw);
-
     // Check if raw.result and raw.result.streamingInfo are defined and raw.result.streamingInfo is an object
     if (
       raw.result &&
@@ -98,15 +96,12 @@ export async function loader({ context }: LoaderFunctionArgs) {
     },
   ];
 
-  console.log("DATES: ", dates);
-
   const leastRecentDateId = dates.reduce((prev, current) =>
     prev.date < current.date ? prev : current
   ).id;
 
-  console.log("Updating: ", leastRecentDateId);
-
   // Get and process the list with the least recent date
+
   const list = await getList({ id: leastRecentDateId as ListType, context });
 
   if (list.results) {

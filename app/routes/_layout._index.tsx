@@ -10,19 +10,15 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const filter = (url.searchParams.get("filter") as ListType) ?? undefined;
+  const filter =
+    (url.searchParams.get("filter") as ListType) ?? ListType.Popular;
 
   if (process.env.NODE_ENV !== "development") {
     const data: DiscoverMovieResponse | null = await context.env.KV.get(
-      filter ?? ListType.NowPlaying,
+      filter,
       {
         type: "json",
       }
-    );
-
-    console.log(
-      "server: ",
-      data?.lastUpdate ?? "no data" + " filter: " + filter
     );
 
     return json(
@@ -30,7 +26,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       { headers: { "Cache-Control": "max-age=86400, public" } }
     );
   } else {
-    const data = await getList({ id: filter ?? ListType.NowPlaying, context });
+    const data = await getList({ id: filter, context });
+
     return json(
       { filter, data },
       { headers: { "Cache-Control": "max-age=86400, public" } }
@@ -39,9 +36,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 }
 
 export default function Home() {
-  const { data, filter } = useLoaderData<typeof loader>();
-
-  console.log("client: ", data?.lastUpdate ?? "no data" + " filter: " + filter);
+  const { data } = useLoaderData<typeof loader>();
 
   return (
     <section className="grid-container px-6">

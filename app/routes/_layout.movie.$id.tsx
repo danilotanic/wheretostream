@@ -1,16 +1,19 @@
 import { LoaderFunctionArgs, defer } from "@remix-run/cloudflare";
 import { Await, useLoaderData } from "@remix-run/react";
-import { ArrowUpRightIcon } from "lucide-react";
 import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import Error from "~/components/error";
-import Option, { OptionUnavailable } from "~/components/option";
 import Country from "~/components/table/country";
 import TableHeader from "~/components/table/header";
+import Option, { OptionUnavailable } from "~/components/table/option";
 import Provider from "~/components/table/provider";
 import ProvidersCarousel from "~/components/table/providersCarousel";
 import { humanReadableTime } from "~/utils";
 import { getMovie } from "~/utils/api/movie.server";
+import {
+  Country as CountryProps,
+  Option as OptionProps,
+} from "~/utils/api/rapidapi.types";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
@@ -32,6 +35,8 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
     { headers: { "Cache-Control": "max-age=86400, public" } }
   );
 }
+
+type CountryKey = keyof CountryProps;
 
 export default function Movie() {
   const {
@@ -87,7 +92,14 @@ export default function Movie() {
                 (p) => p.slug === (provider ?? providers?.[0]?.slug)
               );
 
-              console.log(providers);
+              const keysToCheck: CountryKey[] = ["buy", "rent", "subscription"];
+              const availableKeys: CountryKey[] = [];
+
+              keysToCheck.forEach((key) => {
+                if (selected?.countries.some((obj) => key in obj)) {
+                  availableKeys.push(key);
+                }
+              });
 
               return (
                 <>
@@ -114,50 +126,31 @@ export default function Movie() {
 
                     {selected?.countries && selected.countries.length > 0 ? (
                       <>
-                        <TableHeader />
+                        <TableHeader keys={availableKeys} />
                         <ul className="-ml-2 -mr-1">
                           {selected.countries.map((country) => (
                             <li
                               key={country.code}
-                              className="grid grid-cols-6 transition-colors duration-300 hover:duration-100 py-1 rounded-lg pl-2 pr-1 items-center gap-4 hover:bg-neutral-100"
+                              className="flex transition-colors duration-300 hover:duration-100 py-1 rounded-lg pl-2 pr-1 items-center gap-4 hover:bg-neutral-100"
                             >
-                              <Country
-                                code={country.code}
-                                className="col-span-3"
-                              />
-                              {country.rent?.price ? (
-                                <Option
-                                  to={country.rent.link}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  {country.rent.price.formatted}
-                                </Option>
-                              ) : (
-                                <OptionUnavailable />
-                              )}
-                              {country.buy?.price ? (
-                                <Option
-                                  to={country.buy.link}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  {country.buy.price.formatted}
-                                </Option>
-                              ) : (
-                                <OptionUnavailable />
-                              )}
-                              {country.subscription ? (
-                                <Option
-                                  to={country.subscription.link}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  Stream <ArrowUpRightIcon size={16} />
-                                </Option>
-                              ) : (
-                                <OptionUnavailable />
-                              )}
+                              <Country code={country.code} />
+                              {availableKeys.map((key) => {
+                                const item = country[key] as OptionProps;
+
+                                return (
+                                  <>
+                                    {item && item.link ? (
+                                      <Option to={item.link}>
+                                        {item?.price
+                                          ? item?.price.formatted
+                                          : "Stream"}
+                                      </Option>
+                                    ) : (
+                                      <OptionUnavailable />
+                                    )}
+                                  </>
+                                );
+                              })}
                             </li>
                           ))}
                         </ul>

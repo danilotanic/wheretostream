@@ -10,7 +10,7 @@ export default function Country({
   className?: string;
 }) {
   return (
-    <div className={cn("w-2/3 flex items-center gap-2", className)}>
+    <div className={cn("w-full flex-1 flex items-center gap-2", className)}>
       <CircleFlag countryCode={code} className="size-[18px]" />
       {name(code)}
     </div>

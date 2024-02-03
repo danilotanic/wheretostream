@@ -4,7 +4,7 @@ import { cn } from "~/utils";
 
 export default function Option({ children, className, ...rest }: LinkProps) {
   return (
-    <div>
+    <div className="min-w-[100px]">
       <Link
         {...rest}
         className={cn(
@@ -29,7 +29,7 @@ export function OptionUnavailable({
   ...rest
 }: OptionUnavailableProps) {
   return (
-    <div>
+    <div className="min-w-[100px]">
       <span
         {...rest}
         className={cn(

@@ -28,7 +28,6 @@ export default function ProvidersCarousel({
     (api: CarouselApi) => {
       scaleLeft.set(api.scrollProgress());
       scaleRight.set(1 - api.scrollProgress());
-      console.log(api.scrollProgress());
     },
     [scaleLeft, scaleRight]
   );

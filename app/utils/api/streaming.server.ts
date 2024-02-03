@@ -41,60 +41,62 @@ export function transformData(data: RapidAPIResponse): StreamingResponse {
   const transformed: StreamingResponse = [];
 
   for (const countryCode in originalData) {
-    originalData[countryCode].forEach((provider) => {
-      // Initialize the provider if not already
-      if (transformed.findIndex((p) => p.slug === provider.service) === -1) {
-        transformed.push({
-          slug: provider.service,
-          logo: `https://www.movieofthenight.com/static/image/icon/service/${provider.service}.svg`,
-          countries: [],
-          attributes: [],
-        });
-      }
-
-      // Get the index of the provider and their countries
-      const providerIndex = transformed.findIndex(
-        (p) => p.slug === provider.service
-      );
-
-      // Get the index of the country and add either the buy, rent or stream option
-      const providerCountries = transformed[providerIndex].countries;
-      const providerAttributes = transformed[providerIndex].attributes;
-      const countryIndex = providerCountries.findIndex(
-        (c) => c.code === countryCode
-      );
-
-      if (countryIndex === -1) {
-        // If the country does not exist, initialize it with the current data
-        const newData = {
-          code: countryCode,
-          [provider.streamingType]: {
-            link: provider.link,
-            price: provider.price,
-            availableSince: provider.availableSince,
-          },
-        };
-        providerCountries.push(newData);
-
-        if (!providerAttributes.includes(provider.streamingType)) {
-          providerAttributes.push(provider.streamingType);
+    originalData[countryCode]
+      .filter((obj) => !Object.prototype.hasOwnProperty.call(obj, "addon")) // remove addons
+      .forEach((provider) => {
+        // Initialize the provider if not already
+        if (transformed.findIndex((p) => p.slug === provider.service) === -1) {
+          transformed.push({
+            slug: provider.service,
+            logo: `https://www.movieofthenight.com/static/image/icon/service/${provider.service}.svg`,
+            countries: [],
+            attributes: [],
+          });
         }
-      } else {
-        // If the country already exists, update it with new type data
-        providerCountries[countryIndex] = {
-          ...providerCountries[countryIndex],
-          [provider.streamingType]: {
-            link: provider.link,
-            price: provider.price,
-            availableSince: provider.availableSince,
-          },
-        };
 
-        if (!providerAttributes.includes(provider.streamingType)) {
-          providerAttributes.push(provider.streamingType);
+        // Get the index of the provider and their countries
+        const providerIndex = transformed.findIndex(
+          (p) => p.slug === provider.service
+        );
+
+        // Get the index of the country and add either the buy, rent or stream option
+        const providerCountries = transformed[providerIndex].countries;
+        const providerAttributes = transformed[providerIndex].attributes;
+        const countryIndex = providerCountries.findIndex(
+          (c) => c.code === countryCode
+        );
+
+        if (countryIndex === -1) {
+          // If the country does not exist, initialize it with the current data
+          const newData = {
+            code: countryCode,
+            [provider.streamingType]: {
+              link: provider.link,
+              price: provider.price,
+              availableSince: provider.availableSince,
+            },
+          };
+          providerCountries.push(newData);
+
+          if (!providerAttributes.includes(provider.streamingType)) {
+            providerAttributes.push(provider.streamingType);
+          }
+        } else {
+          // If the country already exists, update it with new type data
+          providerCountries[countryIndex] = {
+            ...providerCountries[countryIndex],
+            [provider.streamingType]: {
+              link: provider.link,
+              price: provider.price,
+              availableSince: provider.availableSince,
+            },
+          };
+
+          if (!providerAttributes.includes(provider.streamingType)) {
+            providerAttributes.push(provider.streamingType);
+          }
         }
-      }
-    });
+      });
   }
 
   return transformed;

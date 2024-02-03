@@ -10,8 +10,6 @@ type CardProps = {
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, movie, ...props }, ref) => {
-    console.log(movie);
-
     return (
       <div
         ref={ref}

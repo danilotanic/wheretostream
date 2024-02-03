@@ -28,8 +28,8 @@ export default function Navigation() {
   const [searchParams] = useSearchParams();
   const currentFilter =
     location.pathname === "/"
-      ? searchParams.get("filter") || "nowPlaying"
-      : null;
+      ? searchParams.get("filter") || "popular"
+      : undefined;
 
   return (
     <nav
@@ -45,22 +45,22 @@ export default function Navigation() {
         </li>
         <li>
           <NavLink
-            to="/"
-            prefetch="intent"
-            className="px-3 py-2 block"
-            active={currentFilter === "nowPlaying"}
-          >
-            New
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
             prefetch="intent"
             to="/?filter=popular"
             className="px-3 py-2 block"
             active={currentFilter === "popular"}
           >
             Popular
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/?filter=new"
+            prefetch="intent"
+            className="px-3 py-2 block"
+            active={currentFilter === "new"}
+          >
+            New
           </NavLink>
         </li>
         <li>

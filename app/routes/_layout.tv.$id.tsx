@@ -1,18 +1,18 @@
 import { LoaderFunctionArgs, defer } from "@remix-run/cloudflare";
-import { Await, Link, useLoaderData } from "@remix-run/react";
+import { Await, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import Error from "~/components/error";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import Country from "~/components/table/country";
+import Option, { OptionUnavailable } from "~/components/table/option";
+import Provider from "~/components/table/provider";
+import ProvidersCarousel from "~/components/table/providersCarousel";
+import TableHeader from "~/components/table/header";
 import { humanReadableTime } from "~/utils";
+import {
+  Country as CountryProps,
+  Option as OptionProps,
+} from "~/utils/api/rapidapi.types";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
 import { getShow } from "~/utils/api/tv.server";
 
@@ -35,6 +35,8 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
     { headers: { "Cache-Control": "max-age=86400, public" } }
   );
 }
+
+type CountryKey = keyof CountryProps;
 
 export default function Movie() {
   const {
@@ -85,81 +87,81 @@ export default function Movie() {
           }
         >
           <Await resolve={providers} errorElement={<Error />}>
-            {(providers) => (
-              <>
-                {providers.length > 0 ? (
-                  <Tabs
-                    className="mt-10 w-full max-w-xl mx-auto"
-                    defaultValue={provider ?? providers?.[0]?.slug}
-                  >
-                    <TabsList className="flex gap-2 items-center justify-center">
-                      {providers.map((provider) => (
-                        <TabsTrigger
-                          key={provider.slug}
-                          value={provider.slug}
-                          asChild
-                        >
-                          <Link
-                            preventScrollReset
-                            to={`?provider=${provider.slug}`}
-                            className="!flex flex-col after:!hidden bg-neutral-100 rounded-2xl !p-4 data-[state=active]:bg-neutral-200"
-                          >
-                            <img
-                              className="size-[60px] rounded-xl mb-2"
-                              src={`/assets/providers/${provider.slug}.png`}
-                              alt={provider.slug}
-                            />
-                            <span className="capitalize">{provider.slug}</span>
-                            <span className="text-neutral-600 dark:text-neutral-400 text-sm">
-                              {provider.countries.length} Countries
-                            </span>
-                          </Link>
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
+            {(providers) => {
+              if (providers.length === 0) return null;
 
-                    {providers.map((provider) => (
-                      <TabsContent value={provider.slug} key={provider.slug}>
-                        <Table className="table-fixed">
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="w-full">
-                                Countries
-                              </TableHead>
-                              <TableHead className="w-1/3">Rent</TableHead>
-                              <TableHead className="w-1/3">Buy</TableHead>
-                              <TableHead className="w-1/3">Stream</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {provider.countries.map((country) => (
-                              <TableRow key={country.code}>
-                                <TableCell className="w-full">
-                                  <Country code={country.code} />
-                                </TableCell>
-                                <TableCell className="w-1/3">
-                                  {country.rent?.price ? (
-                                    <Price {...country.rent} />
-                                  ) : null}
-                                </TableCell>
-                                <TableCell className="w-1/3">
-                                  {country.buy?.price ? (
-                                    <Price {...country.buy} />
-                                  ) : null}
-                                </TableCell>
-                                <TableCell className="w-1/3">
-                                  {country.subscription?.availableSince}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TabsContent>
-                    ))}
-                  </Tabs>
-                ) : null}
-              </>
-            )}
+              const selected = providers.find(
+                (p) => p.slug === (provider ?? providers?.[0]?.slug)
+              );
+
+              const keysToCheck: CountryKey[] = ["buy", "rent", "subscription"];
+              const availableKeys: CountryKey[] = [];
+
+              keysToCheck.forEach((key) => {
+                if (selected?.countries.some((obj) => key in obj)) {
+                  availableKeys.push(key);
+                }
+              });
+
+              return (
+                <>
+                  <div className="w-full max-w-xl mx-auto">
+                    {providers.length <= 4 ? (
+                      <ul className="flex my-8 justify-center gap-2 items-center">
+                        {providers.map((provider) => (
+                          <Provider
+                            {...provider}
+                            key={provider.slug}
+                            selected={selected?.slug}
+                            className="w-[132px]"
+                          />
+                        ))}
+                      </ul>
+                    ) : null}
+
+                    {providers.length > 4 ? (
+                      <ProvidersCarousel
+                        selected={selected}
+                        providers={providers}
+                      />
+                    ) : null}
+
+                    {selected?.countries && selected.countries.length > 0 ? (
+                      <>
+                        <TableHeader keys={availableKeys} />
+                        <ul className="-ml-2 -mr-1">
+                          {selected.countries.map((country) => (
+                            <li
+                              key={country.code}
+                              className="flex transition-colors duration-300 hover:duration-100 py-1 rounded-lg pl-2 pr-1 items-center gap-4 hover:bg-neutral-100"
+                            >
+                              <Country code={country.code} />
+                              {availableKeys.map((key) => {
+                                const item = country[key] as OptionProps;
+
+                                return (
+                                  <>
+                                    {item && item.link ? (
+                                      <Option to={item.link}>
+                                        {item?.price
+                                          ? item?.price.formatted
+                                          : "Stream"}
+                                      </Option>
+                                    ) : (
+                                      <OptionUnavailable />
+                                    )}
+                                  </>
+                                );
+                              })}
+                            </li>
+                          ))}
+                        </ul>
+                      </>
+                    ) : null}
+                  </div>
+                </>
+              );
+            }}
           </Await>
         </Suspense>
       </div>
