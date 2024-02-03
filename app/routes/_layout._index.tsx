@@ -15,7 +15,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   if (process.env.NODE_ENV !== "development") {
     const data: DiscoverMovieResponse | null = await context.env.KV.get(
-      filter,
+      filter === ListType.New ? ListType.NowPlaying : filter,
       {
         type: "json",
       }
