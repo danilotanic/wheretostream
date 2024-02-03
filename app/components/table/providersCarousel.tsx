@@ -23,6 +23,7 @@ export default function ProvidersCarousel({
   const [drag, setDrag] = useState(false);
   const scaleLeft = useMotionValue(0);
   const scaleRight = useMotionValue(0);
+  const startIndex = providers.findIndex((p) => p.slug === selected?.slug);
 
   const onSlidesInView = useCallback(
     (api: CarouselApi) => {
@@ -37,6 +38,9 @@ export default function ProvidersCarousel({
       return;
     }
 
+    // make sure it initializes the gradient on first render
+    onSlidesInView(api);
+
     api.on("scroll", onSlidesInView);
     api.on("pointerDown", () => setDrag(true));
     api.on("pointerUp", () => setDrag(false));
@@ -46,7 +50,7 @@ export default function ProvidersCarousel({
     <Carousel
       setApi={setApi}
       className="my-8"
-      opts={{ align: "center", dragFree: true }}
+      opts={{ align: "center", dragFree: true, startIndex }}
     >
       <CarouselContent>
         {providers.map((provider) => (
