@@ -115,7 +115,7 @@ async function getMovies({
     }
   );
   const data: RapidListResponse = await response.json();
-  return data.result;
+  return data.result.slice(0, 20);
 }
 
 export async function loader({ context }: LoaderFunctionArgs) {
