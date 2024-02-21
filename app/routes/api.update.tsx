@@ -156,8 +156,7 @@ async function getMovies({ type, context }: GetProps) {
 
   if (path === "changes") {
     const data: RapidChangesResponse = await response.json();
-    console.log(data);
-    return data.result?.map((item) => item.show).slice(0, 20);
+    return data.result.map((item) => item.show).slice(0, 20);
   } else {
     const data: RapidListResponse = await response.json();
     return data.result.slice(0, 20);
