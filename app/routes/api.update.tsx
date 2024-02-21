@@ -1,7 +1,61 @@
 import { LoaderFunctionArgs, json } from "@remix-run/cloudflare";
-import { ListType, getList } from "~/utils/api/list.server";
-import { DiscoverMovieResponse } from "~/utils/api/moviedb.types";
-import { RapidAPIResponse } from "~/utils/api/rapidapi.types";
+import { getMovie } from "~/utils/api/movie.server";
+import {
+  DiscoverMovieResponse,
+  MovieResponse,
+} from "~/utils/api/moviedb.types";
+import {
+  RapidAPIResponse,
+  RapidListResponse,
+} from "~/utils/api/rapidapi.types";
+
+type DiscoverMovieResponseWithLastUpdate = DiscoverMovieResponse & {
+  lastUpdate: number;
+};
+
+type RawResults = {
+  id: number;
+  countries?: number;
+};
+
+type MovieResponseWithCountries = MovieResponse & { countries: number };
+
+type Types = "popular" | "upcoming" | "now_playing";
+
+type GetProps = {
+  type: Types;
+  context: LoaderFunctionArgs["context"];
+};
+
+const options = {
+  now_playing: {
+    desc: "true",
+    country: "us",
+    year_min: "2023",
+    year_max: "2024",
+    show_type: "movie",
+    order_by: "popularity_1year",
+    services: "apple,disney,hbo,netflix,prime",
+  },
+  upcoming: {
+    desc: "true",
+    country: "us",
+    year_min: "2023",
+    year_max: "2024",
+    show_type: "movie",
+    order_by: "popularity_1year",
+    services: "apple,disney,hbo,netflix,prime",
+  },
+  popular: {
+    desc: "true",
+    country: "us",
+    year_min: "2023",
+    year_max: "2024",
+    show_type: "movie",
+    order_by: "popularity_1year",
+    services: "apple,disney,hbo,netflix,prime",
+  },
+};
 
 async function wait() {
   return new Promise((resolve) => {
@@ -9,11 +63,44 @@ async function wait() {
   });
 }
 
-async function processMovies(
-  movies: DiscoverMovieResponse["results"],
+async function getMovieDetails(
+  movies: RawResults[],
   context: LoaderFunctionArgs["context"]
 ) {
+  const moviesResponse: MovieResponseWithCountries[] = [];
+
   for (const movie of movies!) {
+    let movieResponse: MovieResponseWithCountries = {
+      countries: 0,
+    };
+
+    const result = await getMovie({ id: movie.id, context });
+
+    if (result) {
+      movieResponse = {
+        ...result,
+        countries: movie.countries!,
+      };
+    }
+
+    moviesResponse.push(movieResponse);
+  }
+
+  return moviesResponse;
+}
+
+async function getStreamingInfo(
+  movies: RawResults[],
+  context: LoaderFunctionArgs["context"]
+) {
+  const moviesResponse: RawResults[] = [];
+
+  for (const movie of movies!) {
+    let movieResponse = {
+      id: 0,
+      countries: 0,
+    };
+
     const response = await fetch(
       `https://streaming-availability.p.rapidapi.com/get?tmdb_id=movie/${movie.id}`,
       {
@@ -33,16 +120,58 @@ async function processMovies(
       raw.result.streamingInfo &&
       typeof raw.result.streamingInfo === "object"
     ) {
-      movie.countries = Object.keys(raw.result.streamingInfo).length;
+      movieResponse = {
+        id: raw.result.tmdbId,
+        countries: Object.keys(raw.result.streamingInfo).length,
+      };
     } else {
-      movie.countries = 0; // or any default value you deem appropriate
+      movieResponse = {
+        id: raw.result.tmdbId,
+        countries: 0,
+      };
     }
+
+    moviesResponse.push(movieResponse);
   }
+
+  return moviesResponse;
 }
 
-type DiscoverMovieResponseWithLastUpdate = DiscoverMovieResponse & {
-  lastUpdate: number;
-};
+async function getMovies({ type, context }: GetProps) {
+  const params = new URLSearchParams(options[type]).toString();
+  const response = await fetch(
+    `https://streaming-availability.p.rapidapi.com/search/filters?${params}`,
+    {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        "X-RapidAPI-Key": context.env.RAPID_API_KEY,
+        "X-RapidAPI-Host": context.env.RAPID_API_HOST,
+      },
+    }
+  );
+  const data: RapidListResponse = await response.json();
+  return data.result.slice(0, 20);
+}
+
+async function getAndProcessMovies({ type, context }: GetProps) {
+  // Get popular movies
+  const data = await getMovies({ type: type, context });
+
+  // Get the most minimal data to work with
+  const movies: RawResults[] = [];
+  data?.map((result) =>
+    movies.push({
+      id: result.tmdbId,
+    })
+  );
+
+  // Process the movies
+  const moviesWithStreamingInfo = await getStreamingInfo(movies, context);
+  const list = await getMovieDetails(moviesWithStreamingInfo, context);
+
+  return list;
+}
 
 const fakeData = {
   page: 1,
@@ -75,7 +204,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
   );
   const [nowPlaying, popular, upcoming] = await Promise.all(promises);
 
-  const dates = [
+  const dates: { id: Types; date: number }[] = [
     {
       id: "now_playing",
       date: Number(
@@ -100,15 +229,14 @@ export async function loader({ context }: LoaderFunctionArgs) {
     prev.date < current.date ? prev : current
   ).id;
 
-  // Get and process the list with the least recent date
+  const list = await getAndProcessMovies({ type: leastRecentDateId, context });
 
-  const list = await getList({ id: leastRecentDateId as ListType, context });
-
-  if (list.results) {
-    await processMovies(list.results, context);
-
+  if (list && list.length > 0) {
     // Update the KV store with the new data
-    const data = JSON.stringify({ lastUpdate: new Date().getTime(), ...list });
+    const data = JSON.stringify({
+      results: list,
+      lastUpdate: new Date().getTime(),
+    });
     await context.env.KV.put(leastRecentDateId, data);
   }
 
