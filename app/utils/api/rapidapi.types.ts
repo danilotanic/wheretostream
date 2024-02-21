@@ -14,6 +14,22 @@ export type RapidAPIResponse = {
   };
 };
 
+export type RapidListResponse = {
+  result: {
+    type: string;
+    title: string;
+    year: number;
+    imdbId: string;
+    tmdbId: number;
+    originalTitle: string;
+    genres: Genre[];
+    directors: string[];
+    streamingInfo: StreamingInfo;
+  }[];
+  nextCursor: number;
+  hasMore: boolean;
+};
+
 export type StreamingResponse = Array<Provider>;
 
 export type Provider = {

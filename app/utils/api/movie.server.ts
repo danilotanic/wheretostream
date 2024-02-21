@@ -20,8 +20,6 @@ export async function getMovie({
     },
   });
 
-  console.log(response);
-
   if (response.ok) {
     const data: MovieResponse = await response.json();
     return data;
