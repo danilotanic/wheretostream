@@ -1,12 +1,8 @@
-import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/cloudflare";
+import { LoaderFunctionArgs, json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import Card from "~/components/card";
 import { ListType, getList } from "~/utils/api/list.server";
 import { DiscoverMovieResponse } from "~/utils/api/moviedb.types";
-
-export const meta: MetaFunction = () => {
-  return [{ title: "Where to stream?" }];
-};
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);

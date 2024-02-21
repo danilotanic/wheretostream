@@ -1,4 +1,4 @@
-import type { LinksFunction } from "@remix-run/cloudflare";
+import type { LinksFunction, MetaFunction } from "@remix-run/cloudflare";
 import { cssBundleHref } from "@remix-run/css-bundle";
 import {
   Links,
@@ -13,7 +13,11 @@ import styles from "./tailwind.css";
 import NProgress from "nprogress";
 import { useEffect, useRef } from "react";
 import SearchProvider from "~/components/search";
+
+import faviconIco from "../public/favicon.ico";
+import faviconSvg from "../public/favicon.svg";
 import woff2 from "../public/assets/fonts/SuisseIntl-Regular-WebM.woff2";
+import appleTouchIcon from "../public/assets/images/icons/apple-touh-icon.png";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -25,7 +29,83 @@ export const links: LinksFunction = () => [
     type: "font/woff2",
     crossOrigin: "anonymous",
   },
+  { rel: "icon", href: faviconIco, sizes: "any" },
+  { rel: "icon", href: faviconSvg, type: "image/svg+xml" },
+  { rel: "apple-touch-icon", href: appleTouchIcon },
+  { rel: "manifest", href: "/site.webmanifest" },
 ];
+
+export const meta: MetaFunction = () => {
+  const title = "Whereto.stream";
+  const description =
+    "Explore international streaming options for movies & TV shows.";
+
+  return [
+    {
+      title,
+    },
+    {
+      name: "description",
+      content: description,
+    },
+    {
+      name: "referrer",
+      content: "origin-when-cross-origin",
+    },
+    {
+      property: "og:title",
+      content: title,
+    },
+    {
+      property: "og:type",
+      content: "website",
+    },
+    {
+      property: "og:image",
+      content: "https://whereto.stream/assets/images/social.png",
+    },
+    {
+      property: "og:url",
+      content: "https://whereto.stream",
+    },
+    {
+      property: "og:description",
+      content: description,
+    },
+    {
+      property: "og:site_name",
+      content: title,
+    },
+    {
+      property: "og:image:alt",
+      content: title,
+    },
+    {
+      name: "twitter:card",
+      content: "summary_large_image",
+    },
+    {
+      name: "twitter:title",
+      content: title,
+    },
+    {
+      name: "twitter:description",
+      content: description,
+    },
+    {
+      name: "twitter:image",
+      content: "https://whereto.stream/assets/images/social.png",
+    },
+    {
+      name: "twitter:image:alt",
+      content: title,
+    },
+    {
+      name: "twitter:creator",
+      content: "@gielcobben",
+    },
+  ];
+};
 
 export default function App() {
   const navigation = useNavigation();
