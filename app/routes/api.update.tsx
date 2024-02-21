@@ -6,6 +6,7 @@ import {
 } from "~/utils/api/moviedb.types";
 import {
   RapidAPIResponse,
+  RapidChangesResponse,
   RapidListResponse,
 } from "~/utils/api/rapidapi.types";
 
@@ -28,22 +29,22 @@ type GetProps = {
 };
 
 const options = {
+  // NEW
   now_playing: {
-    desc: "true",
     country: "us",
-    year_min: "2023",
-    year_max: "2024",
-    show_type: "movie",
-    order_by: "popularity_1year",
     services: "apple,disney,hbo,netflix,prime",
+    change_type: "new",
+    target_type: "movie",
+    order_by: "year",
+    desc: "true",
   },
   upcoming: {
-    desc: "true",
+    desc: "false",
     country: "us",
     year_min: "2023",
     year_max: "2024",
     show_type: "movie",
-    order_by: "popularity_1year",
+    order_by: "year",
     services: "apple,disney,hbo,netflix,prime",
   },
   popular: {
@@ -139,8 +140,10 @@ async function getStreamingInfo(
 
 async function getMovies({ type, context }: GetProps) {
   const params = new URLSearchParams(options[type]).toString();
+  const path = type === "now_playing" ? "changes" : "search/filters";
+
   const response = await fetch(
-    `https://streaming-availability.p.rapidapi.com/search/filters?${params}`,
+    `https://streaming-availability.p.rapidapi.com/${path}?${params}`,
     {
       method: "GET",
       headers: {
@@ -150,8 +153,15 @@ async function getMovies({ type, context }: GetProps) {
       },
     }
   );
-  const data: RapidListResponse = await response.json();
-  return data.result.slice(0, 20);
+
+  if (path === "changes") {
+    const data: RapidChangesResponse = await response.json();
+    console.log(data);
+    return data.result?.map((item) => item.show).slice(0, 20);
+  } else {
+    const data: RapidListResponse = await response.json();
+    return data.result.slice(0, 20);
+  }
 }
 
 async function getAndProcessMovies({ type, context }: GetProps) {
