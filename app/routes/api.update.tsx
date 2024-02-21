@@ -32,11 +32,12 @@ const options = {
   // NEW
   now_playing: {
     country: "us",
-    services: "apple,disney,hbo,netflix,prime",
+    desc: "true",
+    order_by: "year",
     change_type: "new",
     target_type: "movie",
-    order_by: "year",
-    desc: "true",
+    output_language: "en",
+    services: "apple,disney,hbo,netflix,prime",
   },
   upcoming: {
     desc: "false",
