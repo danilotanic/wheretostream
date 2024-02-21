@@ -88,7 +88,7 @@ export default function Movie() {
         >
           <Await resolve={providers} errorElement={<Error />}>
             {(providers) => {
-              if (providers.length === 0) return null;
+              if (providers.length === 0) return <Error />;
 
               const selected = providers.find(
                 (p) => p.slug === (provider ?? providers?.[0]?.slug)
@@ -157,7 +157,9 @@ export default function Movie() {
                           ))}
                         </ul>
                       </>
-                    ) : null}
+                    ) : (
+                      <Error />
+                    )}
                   </div>
                 </>
               );
