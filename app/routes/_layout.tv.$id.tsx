@@ -15,6 +15,7 @@ import {
 } from "~/utils/api/rapidapi.types";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
 import { getShow } from "~/utils/api/tv.server";
+import Poster from "~/components/poster";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const { id } = params;
@@ -45,6 +46,8 @@ export default function Movie() {
     streamingInfo: providers,
   } = useLoaderData<typeof loader>();
 
+  console.log(details);
+
   return (
     <div className="w-full px-6 flex-1 flex flex-col">
       <div className="bg-white rounded-3xl p-4 flex-1">
@@ -69,11 +72,7 @@ export default function Movie() {
           </time>
         </header>
         <div className="h-56 p-4">
-          <img
-            alt={`${details.name} poster`}
-            src={`https://image.tmdb.org/t/p/w500/${details.poster_path}`}
-            className="block h-full mx-auto rounded-2xl shadow-2xl"
-          />
+          <Poster name={details.name} path={details.poster_path} />
         </div>
         <p className="mx-auto text-balance max-w-md text-center text-neutral-600 dark:text-neutral-400">
           {details.overview}

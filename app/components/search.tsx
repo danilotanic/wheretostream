@@ -1,7 +1,8 @@
 import { useFetcher, useNavigate } from "@remix-run/react";
-import { ImageIcon, SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
+import Poster from "~/components/poster";
 import {
   CommandDialog,
   CommandInput,
@@ -100,17 +101,10 @@ export function SearchDialog() {
                 resetFetcher();
               }}
             >
-              {item.poster_path ? (
-                <img
-                  alt="Poster"
-                  src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
-                  className="h-full flex-shrink-0 w-[100px] object-cover rounded-2xl"
-                />
-              ) : (
-                <div className="h-full flex-shrink-0 w-[100px] flex items-center justify-center bg-neutral-200 rounded-2xl">
-                  <ImageIcon />
-                </div>
-              )}
+              <Poster
+                path={item.poster_path}
+                className="w-[100px] flex-shrink-0 shadow-none"
+              />
               <div className="size-full rounded-xl p-4 group-aria-selected:bg-neutral-100">
                 <time className="text-xs text-neutral-600">
                   {"release_date" in item

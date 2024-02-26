@@ -3,6 +3,7 @@ import { Await, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import Error from "~/components/error";
+import Poster from "~/components/poster";
 import Country from "~/components/table/country";
 import TableHeader from "~/components/table/header";
 import Option, { OptionUnavailable } from "~/components/table/option";
@@ -65,11 +66,7 @@ export default function Movie() {
           </time>
         </header>
         <div className="h-56 my-8">
-          <img
-            alt={`${details.title} poster`}
-            src={`https://image.tmdb.org/t/p/w500/${details.poster_path}`}
-            className="block h-full mx-auto rounded-2xl shadow-2xl"
-          />
+          <Poster name={details.title} path={details.poster_path} />
         </div>
         {details.overview ? (
           <p className="mx-auto text-balance max-w-md text-center text-neutral-600 dark:text-neutral-400">
