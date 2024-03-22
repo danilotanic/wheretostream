@@ -144,25 +144,30 @@ export default function Movie() {
                               <div className="max-w-xl mx-auto flex items-center gap-4">
                                 <Country code={country.code} />
 
-                                {availableKeys.map((key) => {
-                                  const item = country[key] as OptionProps;
+                                {country.user &&
+                                !country.buy &&
+                                !country.rent &&
+                                !country.subscription ? (
+                                  <p>VPN</p>
+                                ) : (
+                                  availableKeys.map((key) => {
+                                    const item = country[key] as OptionProps;
 
-                                  return (
-                                    <>
-                                      {item && item.link ? (
-                                        <Option to={item.link}>
-                                          {item?.price
-                                            ? item?.price.formatted
-                                            : "Stream"}
-                                        </Option>
-                                      ) : country.user ? (
-                                        <p>VPN</p>
-                                      ) : (
-                                        <OptionUnavailable />
-                                      )}
-                                    </>
-                                  );
-                                })}
+                                    return (
+                                      <>
+                                        {item && item.link ? (
+                                          <Option to={item.link}>
+                                            {item?.price
+                                              ? item?.price.formatted
+                                              : "Stream"}
+                                          </Option>
+                                        ) : (
+                                          <OptionUnavailable />
+                                        )}
+                                      </>
+                                    );
+                                  })
+                                )}
                               </div>
                             </li>
                           ))}
