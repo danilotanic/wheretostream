@@ -1,5 +1,6 @@
 import { Link, LinkProps } from "@remix-run/react";
 import { ReactNode } from "react";
+import ExpressVPNLogo from "~/components/table/logoVPN";
 import { cn } from "~/utils";
 
 export default function Option({ children, className, ...rest }: LinkProps) {
@@ -36,6 +37,30 @@ export function OptionUnavailable({
         {...rest}
         className={cn(
           "text-sm inline-flex select-none items-center whitespace-nowrap px-2 py-1 border border-neutral-200 rounded-lg text-neutral-400",
+          className
+        )}
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
+export function OptionVPN({
+  children = (
+    <>
+      <ExpressVPNLogo className="mr-1" /> Stream with ExpressVPN
+    </>
+  ),
+  className,
+  ...rest
+}: OptionUnavailableProps) {
+  return (
+    <div className="min-w-[100px]">
+      <span
+        {...rest}
+        className={cn(
+          "text-sm inline-flex select-none items-center whitespace-nowrap px-2 py-1 border border-red-200 text-[#DA3940] rounded-lg",
           className
         )}
       >

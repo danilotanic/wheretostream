@@ -6,7 +6,10 @@ import Error from "~/components/error";
 import Poster from "~/components/poster";
 import Country from "~/components/table/country";
 import TableHeader from "~/components/table/header";
-import Option, { OptionUnavailable } from "~/components/table/option";
+import Option, {
+  OptionUnavailable,
+  OptionVPN,
+} from "~/components/table/option";
 import Provider from "~/components/table/provider";
 import ProvidersCarousel from "~/components/table/providersCarousel";
 import { humanReadableTime } from "~/utils";
@@ -144,7 +147,7 @@ export default function Movie() {
                                 !country.buy &&
                                 !country.rent &&
                                 !country.subscription ? (
-                                  <p>VPN</p>
+                                  <OptionVPN />
                                 ) : (
                                   availableKeys.map((key) => {
                                     const item = country[key] as OptionProps;

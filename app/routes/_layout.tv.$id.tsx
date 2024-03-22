@@ -4,7 +4,10 @@ import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import Error from "~/components/error";
 import Country from "~/components/table/country";
-import Option, { OptionUnavailable } from "~/components/table/option";
+import Option, {
+  OptionUnavailable,
+  OptionVPN,
+} from "~/components/table/option";
 import Provider from "~/components/table/provider";
 import ProvidersCarousel from "~/components/table/providersCarousel";
 import TableHeader from "~/components/table/header";
@@ -148,7 +151,7 @@ export default function Movie() {
                                 !country.buy &&
                                 !country.rent &&
                                 !country.subscription ? (
-                                  <p>VPN</p>
+                                  <OptionVPN />
                                 ) : (
                                   availableKeys.map((key) => {
                                     const item = country[key] as OptionProps;
