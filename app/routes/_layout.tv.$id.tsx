@@ -46,11 +46,8 @@ export default function Movie() {
   const {
     provider,
     details,
-    location,
     streamingInfo: providers,
   } = useLoaderData<typeof loader>();
-
-  console.log("LOCATION: ", location);
 
   return (
     <div className="w-full px-6 flex-1 flex flex-col">
@@ -92,6 +89,8 @@ export default function Movie() {
           <Await resolve={providers} errorElement={<Error />}>
             {(providers) => {
               if (providers.length === 0) return <Error />;
+
+              console.log(providers);
 
               const selected = providers.find(
                 (p) => p.slug === (provider ?? providers?.[0]?.slug)
