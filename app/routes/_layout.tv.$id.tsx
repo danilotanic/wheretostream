@@ -104,54 +104,58 @@ export default function Movie() {
 
               return (
                 <>
-                  <div className="w-full max-w-xl mx-auto">
-                    {providers.length <= 4 ? (
-                      <ul className="flex my-8 justify-center gap-2 items-center">
-                        {providers.map((provider) => (
-                          <Provider
-                            {...provider}
-                            key={provider.slug}
-                            selected={selected?.slug}
-                            className="w-[132px]"
-                          />
-                        ))}
-                      </ul>
-                    ) : null}
+                  <div className="w-full">
+                    <div className="max-w-xl mx-auto w-full">
+                      {providers.length <= 4 ? (
+                        <ul className="flex my-8 justify-center gap-2 items-center">
+                          {providers.map((provider) => (
+                            <Provider
+                              {...provider}
+                              key={provider.slug}
+                              selected={selected?.slug}
+                              className="w-[132px]"
+                            />
+                          ))}
+                        </ul>
+                      ) : null}
 
-                    {providers.length > 4 ? (
-                      <ProvidersCarousel
-                        selected={selected}
-                        providers={providers}
-                      />
-                    ) : null}
+                      {providers.length > 4 ? (
+                        <ProvidersCarousel
+                          selected={selected}
+                          providers={providers}
+                        />
+                      ) : null}
+                    </div>
 
                     {selected?.countries && selected.countries.length > 0 ? (
                       <>
                         <TableHeader keys={availableKeys} />
-                        <ul className="-ml-2 -mr-1">
+                        <ul className="max-w-3xl mx-auto">
                           {selected.countries.map((country) => (
                             <li
                               key={country.code}
-                              className="flex transition-colors duration-300 hover:duration-100 py-1 rounded-lg pl-2 pr-1 items-center gap-4 hover:bg-neutral-100"
+                              className="transition-colors duration-300 hover:duration-100 py-1.5 rounded-lg hover:bg-neutral-100"
                             >
-                              <Country code={country.code} />
-                              {availableKeys.map((key) => {
-                                const item = country[key] as OptionProps;
+                              <div className="max-w-xl mx-auto flex items-center gap-4">
+                                <Country code={country.code} />
+                                {availableKeys.map((key) => {
+                                  const item = country[key] as OptionProps;
 
-                                return (
-                                  <>
-                                    {item && item.link ? (
-                                      <Option to={item.link}>
-                                        {item?.price
-                                          ? item?.price.formatted
-                                          : "Stream"}
-                                      </Option>
-                                    ) : (
-                                      <OptionUnavailable />
-                                    )}
-                                  </>
-                                );
-                              })}
+                                  return (
+                                    <>
+                                      {item && item.link ? (
+                                        <Option to={item.link}>
+                                          {item?.price
+                                            ? item?.price.formatted
+                                            : "Stream"}
+                                        </Option>
+                                      ) : (
+                                        <OptionUnavailable />
+                                      )}
+                                    </>
+                                  );
+                                })}
+                              </div>
                             </li>
                           ))}
                         </ul>
