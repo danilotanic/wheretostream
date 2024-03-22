@@ -3,14 +3,12 @@ import { Await, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import Error from "~/components/error";
+import Poster from "~/components/poster";
 import Country from "~/components/table/country";
-import Option, {
-  OptionUnavailable,
-  OptionVPN,
-} from "~/components/table/option";
+import TableHeader from "~/components/table/header";
+import Option, { OptionUnavailable } from "~/components/table/option";
 import Provider from "~/components/table/provider";
 import ProvidersCarousel from "~/components/table/providersCarousel";
-import TableHeader from "~/components/table/header";
 import { humanReadableTime } from "~/utils";
 import {
   Country as CountryProps,
@@ -18,7 +16,6 @@ import {
 } from "~/utils/api/rapidapi.types";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
 import { getShow } from "~/utils/api/tv.server";
-import Poster from "~/components/poster";
 import { getLocation } from "~/utils/getlocation.server";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
