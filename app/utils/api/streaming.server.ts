@@ -95,7 +95,6 @@ export function transformData(data: RapidAPIResponse): StreamingResponse {
         if (countryIndex === -1) {
           // If the country does not exist, initialize it with the current data
           const newData = {
-            user: location === countryCode ? true : false,
             code: countryCode,
             [provider.streamingType]: {
               link: provider.link,
