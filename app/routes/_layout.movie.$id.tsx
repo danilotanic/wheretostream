@@ -140,29 +140,25 @@ export default function Movie() {
                               <div className="max-w-xl mx-auto flex items-center gap-4">
                                 <Country code={country.code} />
 
-                                {country.user && availableKeys.length === 0 ? (
-                                  <p>VPN</p>
-                                ) : null}
+                                {availableKeys.map((key) => {
+                                  const item = country[key] as OptionProps;
 
-                                {availableKeys && availableKeys.length > 0
-                                  ? availableKeys.map((key) => {
-                                      const item = country[key] as OptionProps;
-
-                                      return (
-                                        <>
-                                          {item && item.link ? (
-                                            <Option to={item.link}>
-                                              {item?.price
-                                                ? item?.price.formatted
-                                                : "Stream"}
-                                            </Option>
-                                          ) : (
-                                            <OptionUnavailable />
-                                          )}
-                                        </>
-                                      );
-                                    })
-                                  : null}
+                                  return (
+                                    <>
+                                      {item && item.link ? (
+                                        <Option to={item.link}>
+                                          {item?.price
+                                            ? item?.price.formatted
+                                            : "Stream"}
+                                        </Option>
+                                      ) : country.user ? (
+                                        <p>VPN</p>
+                                      ) : (
+                                        <OptionUnavailable />
+                                      )}
+                                    </>
+                                  );
+                                })}
                               </div>
                             </li>
                           ))}
