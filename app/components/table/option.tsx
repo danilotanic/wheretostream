@@ -60,7 +60,7 @@ export function OptionVPN({
       <span
         {...rest}
         className={cn(
-          "text-sm inline-flex select-none items-center whitespace-nowrap px-2 py-1 border border-red-200 text-[#DA3940] rounded-lg",
+          "text-sm inline-flex select-none items-center whitespace-nowrap px-2 py-1 border border-red-200 text-[#DA3940] hover:text-white hover:bg-[#DA3940] hover:border-[#DA3940] transition-all rounded-lg",
           className
         )}
       >
