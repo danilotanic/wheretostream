@@ -14,8 +14,8 @@ function NavLink(props: LinkProps & { active?: boolean }) {
     <Link
       {...props}
       className={cn(
-        "after:absolute relative after:bottom-0 after:left-1/2 after:-ml-[2px] after:w-1 after:h-1 after:hidden after:bg-black after:rounded-full",
-        { "after:block": props.active },
+        "after:absolute text-neutral-500 hover:text-black transition-colors relative after:bottom-0 after:left-1/2 after:-ml-[2px] after:w-1 after:h-1 after:hidden after:bg-black after:rounded-full",
+        { "after:block text-black": props.active },
         props.className
       )}
     />
@@ -77,7 +77,7 @@ export default function Navigation() {
 
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 py-1.5 justify-center px-4 w-full max-w-xs mx-auto text-neutral-600 bg-neutral-200/70 rounded-full text-sm"
+        className="flex items-center hover:bg-neutral-300/70 transition-colors gap-2 py-1.5 justify-center px-4 w-full max-w-xs mx-auto text-neutral-600 bg-neutral-200/70 rounded-full text-sm"
       >
         <SearchIcon className="size-4 flex-shrink-0" />
         Search movies or series...

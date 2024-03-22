@@ -1,13 +1,12 @@
-import * as React from "react";
 import { type DialogProps } from "@radix-ui/react-dialog";
 import {
   CommandLoading as CommandLoadingPrimitive,
   Command as CommandPrimitive,
 } from "cmdk";
-import { Search } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "~/utils";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
+import { cn } from "~/utils";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -16,7 +15,7 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      "flex h-full w-full flex-col rounded-md bg-white text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50",
+      "flex h-full w-full flex-col rounded-[inherit] bg-white text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50",
       className
     )}
     {...props}
@@ -35,7 +34,7 @@ const CommandDialog = ({
 }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0 shadow-lg wrapper max-w-4xl">
+      <DialogContent className="overflow-hidden !rounded-[21px] p-0 shadow-lg wrapper max-w-4xl">
         <Command
           className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-neutral-500 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5 dark:[&_[cmdk-group-heading]]:text-neutral-400"
           {...commandProps}
@@ -54,7 +53,7 @@ const CommandInput = React.forwardRef<
   <CommandPrimitive.Input
     ref={ref}
     className={cn(
-      "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-neutral-400",
+      "flex h-11 w-full bg-transparent py-3 text-sm outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-neutral-400",
       className
     )}
     {...props}
@@ -157,12 +156,12 @@ const CommandLoading = CommandLoadingPrimitive;
 export {
   Command,
   CommandDialog,
-  CommandInput,
-  CommandList,
   CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
-  CommandShortcut,
-  CommandSeparator,
+  CommandList,
   CommandLoading,
+  CommandSeparator,
+  CommandShortcut,
 };
