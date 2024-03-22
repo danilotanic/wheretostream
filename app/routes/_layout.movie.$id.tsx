@@ -91,10 +91,6 @@ export default function Movie() {
             {(providers) => {
               if (providers.length === 0) return <Error />;
 
-              {
-                console.log(providers);
-              }
-
               const selected = providers.find(
                 (p) => p.slug === (provider ?? providers?.[0]?.slug)
               );
@@ -144,23 +140,30 @@ export default function Movie() {
                             >
                               <div className="max-w-xl mx-auto flex items-center gap-4">
                                 <Country code={country.code} />
-                                {availableKeys.map((key) => {
-                                  const item = country[key] as OptionProps;
 
-                                  return (
-                                    <>
-                                      {item && item.link ? (
-                                        <Option to={item.link}>
-                                          {item?.price
-                                            ? item?.price.formatted
-                                            : "Stream"}
-                                        </Option>
-                                      ) : (
-                                        <OptionUnavailable />
-                                      )}
-                                    </>
-                                  );
-                                })}
+                                {country.user && availableKeys.length === 0 ? (
+                                  <p>VPN</p>
+                                ) : null}
+
+                                {availableKeys && availableKeys.length > 0
+                                  ? availableKeys.map((key) => {
+                                      const item = country[key] as OptionProps;
+
+                                      return (
+                                        <>
+                                          {item && item.link ? (
+                                            <Option to={item.link}>
+                                              {item?.price
+                                                ? item?.price.formatted
+                                                : "Stream"}
+                                            </Option>
+                                          ) : (
+                                            <OptionUnavailable />
+                                          )}
+                                        </>
+                                      );
+                                    })
+                                  : null}
                               </div>
                             </li>
                           ))}
