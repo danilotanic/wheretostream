@@ -34,10 +34,10 @@ export default function Navigation() {
   return (
     <nav
       className={cn(
-        "p-6 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 grid-container"
+        "p-6 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 lg:grid grid-cols-5"
       )}
     >
-      <ul className="flex items-center xl:col-span-2 lg:col-span-[1.5] col-span-1">
+      <ul className="flex items-center col-span-1 xl:col-span-2 justify-center lg:justify-start">
         <li>
           <Link to="/" className="pr-3 block">
             <Logo />
@@ -77,20 +77,20 @@ export default function Navigation() {
 
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center hover:bg-neutral-300/70 transition-colors gap-2 py-1.5 justify-center px-4 h-10 w-full max-w-xs mx-auto text-neutral-600 bg-neutral-200/70 rounded-full text-sm"
+        className="flex items-center mt-2 lg:mt-0 max-w-full hover:bg-neutral-300/70 col-span-3 xl:col-span-1 transition-colors gap-2 py-1.5 justify-center px-4 h-10 w-full lg:max-w-xs mx-auto text-neutral-600 bg-neutral-200/70 rounded-full text-sm"
       >
         <SearchIcon className="size-4 flex-shrink-0" />
         Search movies or series...
       </button>
 
-      <div className="flex justify-end items-center xl:col-span-2 col-span-1">
+      <div className="items-center hidden lg:flex xl:col-span-2 col-span-1 justify-center lg:justify-end">
         <Link
           target="_blank"
           rel="noreferrer"
           to="https://finetune.co/"
           className="text-neutral-600"
         >
-          Powered by <span className="text-black">Finetune</span>
+          Powered by <span className="text-black">FineTune</span>
         </Link>
       </div>
     </nav>
