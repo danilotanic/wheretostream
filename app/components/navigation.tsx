@@ -77,7 +77,7 @@ export default function Navigation() {
 
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center mt-2 lg:mt-0 max-w-full hover:bg-neutral-300/70 col-span-3 xl:col-span-1 transition-colors gap-2 py-1.5 justify-center px-4 h-10 w-full lg:max-w-xs mx-auto text-neutral-600 bg-neutral-200/70 rounded-full text-sm"
+        className="flex items-center mt-2 lg:mt-0 hover:bg-neutral-300/70 col-span-3 xl:col-span-1 transition-colors gap-2 py-1.5 justify-center px-4 h-10 w-full lg:max-w-sm xl:max-w-full mx-auto text-neutral-600 bg-neutral-200/70 rounded-full text-sm"
       >
         <SearchIcon className="size-4 flex-shrink-0" />
         Search movies or series...

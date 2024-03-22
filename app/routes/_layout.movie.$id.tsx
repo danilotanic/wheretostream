@@ -6,10 +6,7 @@ import Error from "~/components/error";
 import Poster from "~/components/poster";
 import Country from "~/components/table/country";
 import TableHeader from "~/components/table/header";
-import Option, {
-  OptionUnavailable,
-  OptionVPN,
-} from "~/components/table/option";
+import Option, { OptionUnavailable } from "~/components/table/option";
 import Provider from "~/components/table/provider";
 import ProvidersCarousel from "~/components/table/providersCarousel";
 import { humanReadableTime } from "~/utils";
@@ -141,32 +138,25 @@ export default function Movie() {
                               className="transition-colors duration-300 hover:duration-100 py-1.5 rounded-lg hover:bg-neutral-100"
                             >
                               <div className="max-w-xl mx-auto flex items-center gap-4">
-                                <Country code={country.code} />
+                                <Country {...country} />
 
-                                {country.user &&
-                                !country.buy &&
-                                !country.rent &&
-                                !country.subscription ? (
-                                  <OptionVPN />
-                                ) : (
-                                  availableKeys.map((key) => {
-                                    const item = country[key] as OptionProps;
+                                {availableKeys.map((key) => {
+                                  const item = country[key] as OptionProps;
 
-                                    return (
-                                      <>
-                                        {item && item.link ? (
-                                          <Option to={item.link}>
-                                            {item?.price
-                                              ? item?.price.formatted
-                                              : "Stream"}
-                                          </Option>
-                                        ) : (
-                                          <OptionUnavailable />
-                                        )}
-                                      </>
-                                    );
-                                  })
-                                )}
+                                  return (
+                                    <>
+                                      {item && item.link ? (
+                                        <Option to={item.link}>
+                                          {item?.price
+                                            ? item?.price.formatted
+                                            : "Stream"}
+                                        </Option>
+                                      ) : (
+                                        <OptionUnavailable />
+                                      )}
+                                    </>
+                                  );
+                                })}
                               </div>
                             </li>
                           ))}

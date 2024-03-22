@@ -56,7 +56,7 @@ export function OptionVPN({
   ...rest
 }: OptionUnavailableProps) {
   return (
-    <div className="min-w-[100px] pr-[35px]">
+    <div className="min-w-[100px]">
       <span
         {...rest}
         className={cn(
