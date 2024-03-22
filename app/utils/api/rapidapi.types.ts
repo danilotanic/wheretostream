@@ -60,6 +60,7 @@ export type Provider = {
 
 export type Country = {
   code: string;
+  user: boolean;
   buy?: Option;
   rent?: Option;
   subscription?: Option;

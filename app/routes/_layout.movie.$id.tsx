@@ -29,6 +29,7 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
     id: Number(id),
     type: "movie",
     context,
+    location,
   });
 
   const details = await getMovie({ id: Number(id), context });
@@ -89,6 +90,10 @@ export default function Movie() {
           <Await resolve={providers} errorElement={<Error />}>
             {(providers) => {
               if (providers.length === 0) return <Error />;
+
+              {
+                console.log(providers);
+              }
 
               const selected = providers.find(
                 (p) => p.slug === (provider ?? providers?.[0]?.slug)

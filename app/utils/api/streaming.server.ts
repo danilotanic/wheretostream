@@ -9,10 +9,12 @@ export async function getSteamingInfo({
   id,
   type,
   context,
+  location,
 }: {
   id: MovieResult["id"];
   type: "tv" | "movie";
   context: LoaderFunctionArgs["context"];
+  location: string | null;
 }): Promise<StreamingResponse> {
   const response = await fetch(
     `https://streaming-availability.p.rapidapi.com/get?tmdb_id=${type}/${id}`,
@@ -29,6 +31,30 @@ export async function getSteamingInfo({
   if (response.ok) {
     const raw: RapidAPIResponse = await response.json();
     const transformed = transformData(raw);
+
+    if (location) {
+      transformed.forEach((provider) => {
+        const countryExcists = provider.countries.some(
+          (c) => c.code === location
+        );
+
+        if (countryExcists) {
+          provider.countries.forEach((country) => {
+            if (country.code === location) {
+              country.user = true;
+            }
+          });
+        }
+
+        if (!countryExcists) {
+          provider.countries.push({
+            code: location,
+            user: true,
+          });
+        }
+      });
+    }
+
     return transformed;
   } else {
     const error: { message: string } = await response.json();
@@ -69,6 +95,7 @@ export function transformData(data: RapidAPIResponse): StreamingResponse {
         if (countryIndex === -1) {
           // If the country does not exist, initialize it with the current data
           const newData = {
+            user: location === countryCode ? true : false,
             code: countryCode,
             [provider.streamingType]: {
               link: provider.link,
