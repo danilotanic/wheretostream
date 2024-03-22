@@ -48,7 +48,7 @@ export default function Movie() {
 
   return (
     <div className="w-full px-6 flex-1 flex flex-col">
-      <div className="bg-white rounded-3xl p-4 flex-1">
+      <div className="bg-white flex flex-col rounded-3xl p-4 flex-1">
         <header className="grid grid-cols-3 text-sm text-neutral-600 dark:text-neutral-400 justify-between">
           <h1 className="text-sm truncate">{details.title}</h1>
           <ul className="flex justify-center items-center gap-4">
