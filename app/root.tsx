@@ -36,7 +36,7 @@ export const links: LinksFunction = () => [
 ];
 
 export const meta: MetaFunction = () => {
-  const title = "Whereto.stream";
+  const title = "Streaming options for movies & TV shows – whereto.stream";
   const description =
     "Explore international streaming options for movies & TV shows.";
 

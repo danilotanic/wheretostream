@@ -74,7 +74,7 @@ export function SearchDialog() {
       commandProps={{ shouldFilter: false, className: "w-full" }}
     >
       <div
-        className={cn("flex items-center px-3", {
+        className={cn("flex items-center px-4", {
           "border-b": search.data && search.data.length > 0,
         })}
       >
