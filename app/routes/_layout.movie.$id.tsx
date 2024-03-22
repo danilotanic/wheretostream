@@ -16,12 +16,14 @@ import {
   Option as OptionProps,
 } from "~/utils/api/rapidapi.types";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
+import { getLocation } from "~/utils/getlocation.server";
 
 export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const { id } = params;
 
   const url = new URL(request.url);
   const provider = url.searchParams.get("provider") ?? undefined;
+  const location = getLocation(request.headers);
 
   const streamingInfo = getSteamingInfo({
     id: Number(id),
@@ -32,7 +34,7 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
   const details = await getMovie({ id: Number(id), context });
 
   return defer(
-    { provider, details, streamingInfo },
+    { provider, details, streamingInfo, location },
     { headers: { "Cache-Control": "max-age=86400, public" } }
   );
 }
@@ -43,8 +45,11 @@ export default function Movie() {
   const {
     provider,
     details,
+    location,
     streamingInfo: providers,
   } = useLoaderData<typeof loader>();
+
+  console.log("LOCATION: ", location);
 
   return (
     <div className="w-full px-6 flex-1 flex flex-col">
