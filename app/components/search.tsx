@@ -89,7 +89,13 @@ export function SearchDialog() {
         ) : null}
       </div>
       {search.data && search.data.length > 0 && (
-        <CommandList className="command-list">
+        <CommandList
+          className={cn(
+            "[&_>_div]:grid [&_>_div]:grid-cols-3",
+            search.data.length === 1 && "[&_>_div]:grid-cols-1",
+            search.data.length === 2 && "[&_>_div]:grid-cols-2"
+          )}
+        >
           {search.data.slice(0, 6).map((item) => (
             <CommandItem
               key={item.id}
