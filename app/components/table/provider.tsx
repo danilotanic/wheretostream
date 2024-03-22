@@ -19,8 +19,8 @@ export default function Provider({
       preventScrollReset
       to={`?provider=${slug}`}
       className={cn(
-        "!flex flex-shrink-0 w-full text-center data-[state=active]:bg-neutral-100 flex-col rounded-2xl !p-4",
-        slug === selected ? "bg-neutral-100" : "",
+        "!flex flex-shrink-0 w-full hover:bg-neutral-100 transition-colors text-center data-[state=active]:bg-neutral-100 flex-col rounded-2xl !p-4",
+        slug === selected ? "bg-neutral-100 hover:bg-neutral-200" : "",
         className
       )}
     >
