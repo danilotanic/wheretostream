@@ -33,14 +33,14 @@ export async function getSteamingInfo({
     const transformed = transformData(raw);
 
     if (location) {
+      const loc = location.toLowerCase().trim();
+
       transformed.forEach((provider) => {
-        const countryExcists = provider.countries.some(
-          (c) => c.code === location
-        );
+        const countryExcists = provider.countries.some((c) => c.code === loc);
 
         if (countryExcists) {
           provider.countries.forEach((country) => {
-            if (country.code === location) {
+            if (country.code === loc) {
               country.user = true;
             }
           });
@@ -48,7 +48,7 @@ export async function getSteamingInfo({
 
         if (!countryExcists) {
           provider.countries.push({
-            code: location,
+            code: loc,
             user: true,
           });
         }
