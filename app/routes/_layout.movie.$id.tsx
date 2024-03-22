@@ -88,8 +88,6 @@ export default function Movie() {
             {(providers) => {
               if (providers.length === 0) return <Error />;
 
-              console.log(providers);
-
               const selected = providers.find(
                 (p) => p.slug === (provider ?? providers?.[0]?.slug)
               );
