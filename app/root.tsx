@@ -29,9 +29,9 @@ export const links: LinksFunction = () => [
     type: "font/woff2",
     crossOrigin: "anonymous",
   },
-  { rel: "icon", href: faviconIco, sizes: "any" },
-  { rel: "icon", href: faviconSvg, type: "image/svg+xml" },
-  { rel: "apple-touch-icon", href: appleTouchIcon },
+  { rel: "icon", href: `${faviconIco}?v=2`, sizes: "any" },
+  { rel: "icon", href: `${faviconSvg}?v=2`, type: "image/svg+xml" },
+  { rel: "apple-touch-icon", href: `${appleTouchIcon}?v=2` },
   { rel: "manifest", href: "/site.webmanifest" },
 ];
 
