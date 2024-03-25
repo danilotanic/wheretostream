@@ -1,3 +1,5 @@
+import { Link } from "@remix-run/react";
+import { Fragment } from "react/jsx-runtime";
 import Error from "~/components/error";
 import Country from "~/components/table/country";
 import TableHeader from "~/components/table/header";
@@ -5,9 +7,15 @@ import Option, { OptionUnavailable } from "~/components/table/option";
 import ProviderComponent from "~/components/table/provider";
 import ProvidersCarousel from "~/components/table/providersCarousel";
 import {
-  Provider,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
+import {
   Country as CountryProps,
   Option as OptionProps,
+  Provider,
 } from "~/utils/api/rapidapi.types";
 
 type CountryKey = keyof CountryProps;
@@ -57,35 +65,76 @@ export default function Providers({
 
       {selected?.countries && selected.countries.length > 0 ? (
         <>
-          <TableHeader keys={availableKeys} />
-          <ul className="max-w-3xl mx-auto">
+          <Accordion type="single" collapsible className="sm:hidden">
             {selected.countries.map((country) => (
-              <li
-                key={country.code}
-                className="transition-colors duration-300 hover:duration-100 py-1.5 rounded-lg hover:bg-neutral-100"
-              >
-                <div className="max-w-xl mx-auto flex items-center gap-1">
+              <AccordionItem key={country.code} value={country.code}>
+                <AccordionTrigger>
                   <Country {...country} />
-
-                  {availableKeys.map((key) => {
-                    const item = country[key] as OptionProps;
-
-                    return (
-                      <>
-                        {item && item.link ? (
-                          <Option key={`option-${key}`} to={item.link}>
-                            {item?.price ? item?.price.formatted : "Stream"}
-                          </Option>
-                        ) : (
-                          <OptionUnavailable key={`option-${key}`} />
-                        )}
-                      </>
-                    );
-                  })}
-                </div>
-              </li>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul>
+                    {availableKeys.map((key) => {
+                      const item = country[key] as OptionProps;
+                      return (
+                        <li
+                          className="flex items-center mb-1"
+                          key={`option-${key}`}
+                        >
+                          {item && item.link ? (
+                            <Link
+                              to={item.link}
+                              className="flex-1 flex items-center"
+                            >
+                              <div className="capitalize flex-1">{key}</div>
+                              <Option to={item.link}>
+                                {item?.price ? item?.price.formatted : "Stream"}
+                              </Option>
+                            </Link>
+                          ) : (
+                            <>
+                              <div className="flex-1 capitalize">{key}</div>
+                              <OptionUnavailable key={`option-${key}`} />
+                            </>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </ul>
+          </Accordion>
+          <div className="hidden sm:block">
+            <TableHeader keys={availableKeys} />
+            <ul className="max-w-3xl mx-auto">
+              {selected.countries.map((country) => (
+                <li
+                  key={country.code}
+                  className="transition-colors duration-300 hover:duration-100 py-1.5 rounded-lg hover:bg-neutral-100"
+                >
+                  <div className="max-w-xl mx-auto flex items-center gap-1">
+                    <Country {...country} />
+                    <div className="flex items-center gap-1">
+                      {availableKeys.map((key) => {
+                        const item = country[key] as OptionProps;
+                        return (
+                          <Fragment key={`option-${key}`}>
+                            {item && item.link ? (
+                              <Option to={item.link}>
+                                {item?.price ? item?.price.formatted : "Stream"}
+                              </Option>
+                            ) : (
+                              <OptionUnavailable key={`option-${key}`} />
+                            )}
+                          </Fragment>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </>
       ) : (
         <Error />

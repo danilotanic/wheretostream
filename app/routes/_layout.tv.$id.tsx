@@ -40,22 +40,29 @@ export default function Movie() {
   } = useLoaderData<typeof loader>();
 
   return (
-    <div className="w-full px-6 flex-1 flex flex-col">
+    <div className="w-full px-3 md:px-6 flex-1 flex flex-col">
       <div className="bg-white flex flex-col rounded-3xl p-4 flex-1">
-        <header className="grid grid-cols-3 text-sm text-neutral-600 dark:text-neutral-400 justify-between">
+        <header className="grid gap-2 grid-cols-3 text-sm text-neutral-600 dark:text-neutral-400 justify-between">
           <h1 className="text-sm truncate">{details.name}</h1>
-          <ul className="flex justify-center items-center gap-4">
-            {details.genres?.map((genre) => (
-              <li key={genre.id}>{genre.name}</li>
-            ))}
-            <li>
+          <div className="flex justify-center items-center gap-4">
+            <ul className="flex gap-4 items-center">
+              {details.genres?.map((genre) => (
+                <li
+                  key={genre.id}
+                  className="hidden md:block whitespace-nowrap first:block md:first:block"
+                >
+                  {genre.name}
+                </li>
+              ))}
+            </ul>
+            <span className="whitespace-nowrap">
               {details.episode_run_time
                 ? `~${humanReadableTime(
                     Number(details.last_episode_to_air?.runtime) ?? 0
                   )}`
                 : "N/A"}
-            </li>
-          </ul>
+            </span>
+          </div>
           <time className="text-right">
             {details.first_air_date
               ? new Date(details.first_air_date).getFullYear()

@@ -38,46 +38,46 @@ export default function Navigation() {
   return (
     <nav
       className={cn(
-        "px-6 lg:px-10 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 lg:grid grid-cols-5"
+        "px-3 md:px-6 lg:px-10 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-3 md:py-7 lg:grid grid-cols-5"
       )}
     >
-      <ul className="flex items-center col-span-1 xl:col-span-2 justify-center lg:justify-start">
-        <li>
-          <Link to="/" className="pr-4 block">
-            <Logo />
-          </Link>
-        </li>
-        <li>
-          <NavLink
-            prefetch="intent"
-            to="/?filter=popular"
-            className="px-3 py-2 block"
-            active={currentFilter === "popular"}
-          >
-            Popular
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            prefetch="intent"
-            to="/?filter=upcoming"
-            className="px-3 py-2 block"
-            active={currentFilter === "upcoming"}
-          >
-            Upcoming
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/?filter=new"
-            prefetch="intent"
-            className="px-3 py-2 block"
-            active={currentFilter === "new"}
-          >
-            Updated
-          </NavLink>
-        </li>
-      </ul>
+      <div className="flex items-center col-span-1 xl:col-span-2 justify-between lg:justify-start">
+        <Link to="/" className="pr-4 block">
+          <Logo />
+        </Link>
+        <ul className="flex items-center">
+          <li>
+            <NavLink
+              prefetch="intent"
+              to="/?filter=popular"
+              className="px-3 py-2 block"
+              active={currentFilter === "popular"}
+            >
+              Popular
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              prefetch="intent"
+              to="/?filter=upcoming"
+              className="px-3 py-2 block"
+              active={currentFilter === "upcoming"}
+            >
+              Upcoming
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/?filter=new"
+              prefetch="intent"
+              className="px-3 py-2 block"
+              active={currentFilter === "new"}
+            >
+              Updated
+            </NavLink>
+          </li>
+        </ul>
+      </div>
 
       <button
         onClick={() => setOpen(true)}

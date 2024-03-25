@@ -35,7 +35,7 @@ export default function Home() {
   const { data } = useLoaderData<typeof loader>();
 
   return (
-    <section className="grid-container px-6">
+    <section className="grid-container px-3 md:px-6">
       {data?.results && data.results.length > 0 ? (
         <>
           {data.results.map((movie) => (

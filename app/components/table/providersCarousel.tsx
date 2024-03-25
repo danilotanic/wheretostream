@@ -57,7 +57,7 @@ export default function ProvidersCarousel({
           <CarouselItem
             key={provider.slug}
             className={cn({
-              "basis-1/4": providers.length > 4,
+              "basis-auto sm:basis-1/4": providers.length > 4,
             })}
           >
             <Provider
@@ -76,8 +76,8 @@ export default function ProvidersCarousel({
         style={{ scaleX: scaleRight, originX: "100%" }}
         className="absolute pointer-events-none inset-y-0 right-0 w-40 from-white to-white/0 bg-gradient-to-l"
       />
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="hidden md:block" />
+      <CarouselNext className="hidden md:block" />
     </Carousel>
   );
 }
