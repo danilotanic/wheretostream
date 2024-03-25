@@ -21,7 +21,7 @@ type RawResults = {
 
 type MovieResponseWithCountries = MovieResponse & { countries: number };
 
-type Types = "popular" | "upcoming" | "now_playing";
+type Types = "popular" | "new" | "upcoming";
 
 type GetProps = {
   type: Types;
@@ -29,25 +29,6 @@ type GetProps = {
 };
 
 const options = {
-  // NEW
-  now_playing: {
-    country: "us",
-    desc: "true",
-    order_by: "year",
-    change_type: "new",
-    target_type: "movie",
-    output_language: "en",
-    services: "apple,disney,hbo,netflix,prime",
-  },
-  upcoming: {
-    desc: "false",
-    country: "us",
-    year_min: "2023",
-    year_max: "2024",
-    show_type: "movie",
-    order_by: "year",
-    services: "apple,disney,hbo,netflix,prime",
-  },
   popular: {
     desc: "true",
     country: "us",
@@ -57,6 +38,16 @@ const options = {
     order_by: "popularity_1year",
     services: "apple,disney,hbo,netflix,prime",
   },
+  new: {
+    country: "us",
+    desc: "true",
+    order_by: "year",
+    change_type: "new",
+    target_type: "movie",
+    output_language: "en",
+    services: "apple,disney,hbo,netflix,prime",
+  },
+  upcoming: {},
 };
 
 async function wait() {
@@ -139,9 +130,9 @@ async function getStreamingInfo(
   return moviesResponse;
 }
 
-async function getMovies({ type, context }: GetProps) {
+async function getMovieListRapid({ type, context }: GetProps) {
   const params = new URLSearchParams(options[type]).toString();
-  const path = type === "now_playing" ? "changes" : "search/filters";
+  const path = type === "new" ? "changes" : "search/filters";
 
   const response = await fetch(
     `https://streaming-availability.p.rapidapi.com/${path}?${params}`,
@@ -155,7 +146,7 @@ async function getMovies({ type, context }: GetProps) {
     }
   );
 
-  if (path === "changes") {
+  if (type === "new") {
     const data: RapidChangesResponse = await response.json();
     return data.result.map((item) => item.show).slice(0, 20);
   } else {
@@ -164,9 +155,34 @@ async function getMovies({ type, context }: GetProps) {
   }
 }
 
+async function getMovieListTMDB({ context }: GetProps) {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1`,
+    {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${context.env.TMDB_API_KEY}`,
+      },
+    }
+  );
+
+  const data = (await response.json()) as DiscoverMovieResponse;
+  return data.results?.slice(0, 20)?.map((item) => ({ tmdbId: item.id })) || [];
+}
+
+type MovieIdsType = { tmdbId: number }[];
 async function getAndProcessMovies({ type, context }: GetProps) {
   // Get popular movies
-  const data = await getMovies({ type: type, context });
+  let data: MovieIdsType = [];
+
+  if (type === "upcoming") {
+    // Upcoming movies uses a list from tmdb
+    data = (await getMovieListTMDB({ type: type, context })) as MovieIdsType;
+  } else {
+    // Popular and new movies uses a filter/list from the RapidAPI
+    data = (await getMovieListRapid({ type: type, context })) as MovieIdsType;
+  }
 
   // Get the most minimal data to work with
   const movies: RawResults[] = [];
@@ -190,11 +206,14 @@ const fakeData = {
   total_results: 1,
 };
 
-export async function loader({ context }: LoaderFunctionArgs) {
+export async function loader({ context, request }: LoaderFunctionArgs) {
+  const { searchParams } = new URL(request.url);
+  const type = (searchParams.get("type") || null) as Types | null;
+
   const storage = await context.env.KV.list();
 
   // Initialization logic, ensure it's done only once
-  const categories = ["now_playing", "popular", "upcoming"];
+  const categories = ["popular", "new", "upcoming"];
   for (const category of categories) {
     if (!storage.keys.find((key) => key.name === category)) {
       await context.env.KV.put(
@@ -212,19 +231,19 @@ export async function loader({ context }: LoaderFunctionArgs) {
   const promises = categories.map((category) =>
     context.env.KV.get(category, { type: "json" })
   );
-  const [nowPlaying, popular, upcoming] = await Promise.all(promises);
+  const [popular, newItems, upcoming] = await Promise.all(promises);
 
   const dates: { id: Types; date: number }[] = [
-    {
-      id: "now_playing",
-      date: Number(
-        (nowPlaying as DiscoverMovieResponseWithLastUpdate)?.lastUpdate
-      ),
-    },
     {
       id: "popular",
       date: Number(
         (popular as DiscoverMovieResponseWithLastUpdate)?.lastUpdate
+      ),
+    },
+    {
+      id: "new",
+      date: Number(
+        (newItems as DiscoverMovieResponseWithLastUpdate)?.lastUpdate
       ),
     },
     {
@@ -239,7 +258,10 @@ export async function loader({ context }: LoaderFunctionArgs) {
     prev.date < current.date ? prev : current
   ).id;
 
-  const list = await getAndProcessMovies({ type: leastRecentDateId, context });
+  const list = await getAndProcessMovies({
+    type: type ? type : leastRecentDateId,
+    context,
+  });
 
   if (list && list.length > 0) {
     // Update the KV store with the new data
