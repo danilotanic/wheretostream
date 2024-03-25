@@ -3,8 +3,10 @@ import { Fragment } from "react/jsx-runtime";
 import Error from "~/components/error";
 import Country from "~/components/table/country";
 import TableHeader from "~/components/table/header";
-import Option, { OptionUnavailable } from "~/components/table/option";
-import ProviderComponent from "~/components/table/provider";
+import Option, {
+  OptionUnavailable,
+  OptionVPN,
+} from "~/components/table/option";
 import ProvidersCarousel from "~/components/table/providersCarousel";
 import {
   Accordion,
@@ -45,26 +47,12 @@ export default function Providers({
   return (
     <div className="w-full">
       <div className="max-w-xl mx-auto w-full">
-        {providers.length <= 4 ? (
-          <ul className="flex my-8 justify-center gap-2 items-center">
-            {providers.map((provider) => (
-              <ProviderComponent
-                {...provider}
-                key={provider.slug}
-                selected={selected?.slug}
-                className="w-[132px]"
-              />
-            ))}
-          </ul>
-        ) : null}
-
-        {providers.length > 4 ? (
-          <ProvidersCarousel selected={selected} providers={providers} />
-        ) : null}
+        <ProvidersCarousel selected={selected} providers={providers} />
       </div>
 
       {selected?.countries && selected.countries.length > 0 ? (
         <>
+          {/* Mobile: */}
           <Accordion type="single" collapsible className="sm:hidden">
             {selected.countries.map((country) => (
               <AccordionItem key={country.code} value={country.code}>
@@ -86,24 +74,35 @@ export default function Providers({
                               className="flex-1 flex items-center"
                             >
                               <div className="capitalize flex-1">{key}</div>
-                              <Option to={item.link}>
+                              <Option to={item.link} className="min-w-0">
                                 {item?.price ? item?.price.formatted : "Stream"}
                               </Option>
                             </Link>
                           ) : (
                             <>
                               <div className="flex-1 capitalize">{key}</div>
-                              <OptionUnavailable key={`option-${key}`} />
+                              <OptionUnavailable
+                                className="min-w-0"
+                                key={`option-${key}`}
+                              />
                             </>
                           )}
                         </li>
                       );
                     })}
+                    {country.user &&
+                    !country.buy &&
+                    !country.rent &&
+                    !country.subscription ? (
+                      <OptionVPN className="w-full" />
+                    ) : null}
                   </ul>
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
+
+          {/* Desktop: */}
           <div className="hidden sm:block">
             <TableHeader keys={availableKeys} />
             <ul className="max-w-3xl mx-auto">

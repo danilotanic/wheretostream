@@ -23,7 +23,9 @@ export default function ProvidersCarousel({
   const [drag, setDrag] = useState(false);
   const scaleLeft = useMotionValue(0);
   const scaleRight = useMotionValue(0);
+
   const startIndex = providers.findIndex((p) => p.slug === selected?.slug);
+  const moreThanFour = providers.length > 4;
 
   const onSlidesInView = useCallback(
     (api: CarouselApi) => {
@@ -52,32 +54,38 @@ export default function ProvidersCarousel({
       className="my-8"
       opts={{ align: "center", dragFree: true, startIndex }}
     >
-      <CarouselContent>
+      <CarouselContent
+        className={cn(moreThanFour ? "justify-normal" : "sm:justify-center")}
+      >
         {providers.map((provider) => (
           <CarouselItem
             key={provider.slug}
-            className={cn({
-              "basis-auto sm:basis-1/4": providers.length > 4,
-            })}
+            className={cn("basis-auto sm:basis-1/4")}
           >
             <Provider
               {...provider}
               selected={selected?.slug}
-              className={cn("cursor-grab", { "cursor-grabbing": drag })}
+              className={cn(moreThanFour ? "cursor-grab" : "!cursor-pointer", {
+                "cursor-grabbing": drag,
+              })}
             />
           </CarouselItem>
         ))}
       </CarouselContent>
-      <motion.div
-        style={{ scaleX: scaleLeft, originX: 0 }}
-        className="absolute pointer-events-none inset-y-0 w-40 from-white to-white/0 bg-gradient-to-r"
-      />
-      <motion.div
-        style={{ scaleX: scaleRight, originX: "100%" }}
-        className="absolute pointer-events-none inset-y-0 right-0 w-40 from-white to-white/0 bg-gradient-to-l"
-      />
-      <CarouselPrevious className="hidden md:block" />
-      <CarouselNext className="hidden md:block" />
+      <div className="block sm:hidden">
+        <motion.div
+          style={{ scaleX: scaleLeft, originX: 0 }}
+          className="absolute pointer-events-none inset-y-0 w-40 from-white to-white/0 bg-gradient-to-r"
+        />
+        <motion.div
+          style={{ scaleX: scaleRight, originX: "100%" }}
+          className="absolute pointer-events-none inset-y-0 right-0 w-40 from-white to-white/0 bg-gradient-to-l"
+        />
+      </div>
+      <div className={cn(moreThanFour ? "md:block" : "hidden")}>
+        <CarouselPrevious />
+        <CarouselNext />
+      </div>
     </Carousel>
   );
 }

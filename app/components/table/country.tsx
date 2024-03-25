@@ -18,7 +18,9 @@ export default function Country({
     <div className={cn("w-full flex-1 flex items-center gap-2", className)}>
       <CircleFlag countryCode={code} className="size-[18px]" />
       {name(code)}
-      {user && !buy && !rent && !subscription ? <OptionVPN /> : null}
+      {user && !buy && !rent && !subscription ? (
+        <OptionVPN className="hidden sm:block" />
+      ) : null}
     </div>
   );
 }
