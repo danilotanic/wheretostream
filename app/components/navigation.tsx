@@ -80,7 +80,7 @@ export default function Navigation() {
         className="flex items-center mt-2 lg:mt-0 hover:bg-neutral-300/70 col-span-3 xl:col-span-1 transition-colors gap-2 py-1.5 justify-center px-4 h-10 w-full lg:max-w-sm xl:max-w-full mx-auto text-neutral-600 bg-neutral-200/70 rounded-full text-sm"
       >
         <SearchIcon className="size-4 flex-shrink-0" />
-        Search movies or series...
+        Search for movies or series...
       </button>
 
       <div className="items-center hidden lg:flex xl:col-span-2 col-span-1 justify-center lg:justify-end">

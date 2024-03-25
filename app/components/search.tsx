@@ -81,7 +81,7 @@ export function SearchDialog() {
         <SearchIcon className="mr-2 size-4 shrink-0 opacity-50" />
         <CommandInput
           className="flex-1"
-          placeholder="Search for a movies or series..."
+          placeholder="Search for movies or series..."
           onValueChange={(value) => search.load(`/api/search?q=${value}`)}
         />
         {search.state === "loading" ? (

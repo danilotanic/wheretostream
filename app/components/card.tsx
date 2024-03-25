@@ -15,7 +15,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          "bg-white group min-w-0 rounded-3xl text-neutral-500 duration-300 hover:duration-100 hover:bg-neutral-200/40 transition-colors",
+          "bg-white group min-w-0 rounded-3xl text-neutral-500 duration-300 hover:duration-100 hover:bg-neutral-200/40 transition-colors xl:aspect-[2/2.2] flex flex-col",
           className
         )}
         {...props}
@@ -28,10 +28,12 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
               : "N/A"}
           </time>
         </header>
-        <div className="h-[260px] p-4">
-          <Link to={`/movie/${movie.id}`} prefetch="intent">
-            <Poster name={movie.title} path={movie.poster_path} />
-          </Link>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="max-h-[260px] h-full p-4 2xl:max-h-[320px]">
+            <Link to={`/movie/${movie.id}`} prefetch="intent">
+              <Poster name={movie.title} path={movie.poster_path} />
+            </Link>
+          </div>
         </div>
         <footer className="flex justify-between p-4">
           <span>
