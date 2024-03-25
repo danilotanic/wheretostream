@@ -88,45 +88,44 @@ export function SearchDialog() {
           <ActivityIndicator size={16} className="absolute right-7 top-[2px]" />
         ) : null}
       </div>
-      {search.data && search.data.length > 0 && (
-        <CommandList
-          className={cn(
-            "[&_>_div]:grid [&_>_div]:grid-cols-3",
-            search.data.length === 1 && "[&_>_div]:grid-cols-1",
-            search.data.length === 2 && "[&_>_div]:grid-cols-2"
-          )}
-        >
-          {search.data.slice(0, 6).map((item) => (
-            <CommandItem
-              key={item.id}
-              value={`item-${item.id}`}
-              className="h-40 group cursor-pointer flex items-start gap-2"
-              onSelect={() => {
-                navigate(`/${item.media_type}/${item.id}`);
-                setOpen(false);
-                resetFetcher();
-              }}
-            >
-              <Poster
-                path={item.poster_path}
-                className="w-[100px] flex-shrink-0 shadow-none"
-              />
-              <div className="size-full rounded-xl p-4 group-aria-selected:bg-neutral-100">
-                <time className="text-xs text-neutral-600">
-                  {"release_date" in item
-                    ? new Date(item.release_date ?? "").getFullYear()
-                    : "first_air_date" in item
-                    ? new Date(item.first_air_date ?? "").getFullYear()
-                    : "N/A"}
-                </time>
-                <span className="block">
-                  {"title" in item ? item.title : (item as TvResult).name}
-                </span>
-              </div>
-            </CommandItem>
-          ))}
-        </CommandList>
-      )}
+
+      <CommandList
+        className={cn(
+          "[&_>_div]:grid [&_>_div]:grid-cols-3",
+          search.data?.length === 1 && "[&_>_div]:grid-cols-1",
+          search.data?.length === 2 && "[&_>_div]:grid-cols-2"
+        )}
+      >
+        {search.data?.slice(0, 6).map((item) => (
+          <CommandItem
+            key={item.id}
+            value={`item-${item.id}`}
+            className="h-40 group cursor-pointer flex items-start gap-2"
+            onSelect={() => {
+              navigate(`/${item.media_type}/${item.id}`);
+              setOpen(false);
+              resetFetcher();
+            }}
+          >
+            <Poster
+              path={item.poster_path}
+              className="w-[100px] flex-shrink-0 shadow-none"
+            />
+            <div className="size-full rounded-xl p-4 group-aria-selected:bg-neutral-100">
+              <time className="text-xs text-neutral-600">
+                {"release_date" in item
+                  ? new Date(item.release_date ?? "").getFullYear()
+                  : "first_air_date" in item
+                  ? new Date(item.first_air_date ?? "").getFullYear()
+                  : "N/A"}
+              </time>
+              <span className="block">
+                {"title" in item ? item.title : (item as TvResult).name}
+              </span>
+            </div>
+          </CommandItem>
+        ))}
+      </CommandList>
     </CommandDialog>
   );
 }
