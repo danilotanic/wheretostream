@@ -28,6 +28,17 @@ type GetProps = {
   context: LoaderFunctionArgs["context"];
 };
 
+// Get today's date
+const today = new Date();
+
+// Format the date as "YYYY-MM-DD"
+const formattedDate =
+  today.getFullYear() +
+  "-" +
+  String(today.getMonth() + 1).padStart(2, "0") +
+  "-" +
+  String(today.getDate()).padStart(2, "0");
+
 const options = {
   popular: {
     desc: "true",
@@ -47,7 +58,16 @@ const options = {
     output_language: "en",
     services: "apple,disney,hbo,netflix,prime",
   },
-  upcoming: {},
+  upcoming: {
+    include_adult: "false",
+    include_video: "false",
+    language: "en-US",
+    page: "1",
+    sort_by: "popularity.desc",
+    with_release_type: "2|3",
+    release_date_gte: "{min_date}",
+    release_date_lte: formattedDate.toString(),
+  },
 };
 
 async function wait() {
@@ -107,6 +127,11 @@ async function getStreamingInfo(
     );
     const raw: RapidAPIResponse = await response.json();
 
+    // if error, skip and continue
+    if (raw.message) {
+      continue;
+    }
+
     // Check if raw.result and raw.result.streamingInfo are defined and raw.result.streamingInfo is an object
     if (
       raw.result &&
@@ -155,20 +180,21 @@ async function getMovieListRapid({ type, context }: GetProps) {
   }
 }
 
-async function getMovieListTMDB({ context }: GetProps) {
+async function getMovieListTMDB({ type, context }: GetProps) {
+  const params = new URLSearchParams(options[type]).toString();
   const response = await fetch(
-    `https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1`,
+    `https://api.themoviedb.org/3/discover/movie?${params}`,
     {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization: `Bearer ${context.env.TMDB_API_KEY}`,
+        Authorization: `Bearer ${context.env.TMDB_ACCESS_TOKEN}`,
       },
     }
   );
 
-  const data = (await response.json()) as DiscoverMovieResponse;
-  return data.results?.slice(0, 20)?.map((item) => ({ tmdbId: item.id })) || [];
+  const data: DiscoverMovieResponse = await response.json();
+  return data.results?.map((item) => ({ tmdbId: item.id })).slice(0, 20) || [];
 }
 
 type MovieIdsType = { tmdbId: number }[];
@@ -208,7 +234,12 @@ const fakeData = {
 
 export async function loader({ context, request }: LoaderFunctionArgs) {
   const { searchParams } = new URL(request.url);
-  const type = (searchParams.get("type") || null) as Types | null;
+  let type = (searchParams.get("type") || null) as Types | null;
+
+  // check if type is one of the allowed values
+  if (type && !["popular", "new", "upcoming"].includes(type)) {
+    type = null;
+  }
 
   const storage = await context.env.KV.list();
 
@@ -258,8 +289,9 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
     prev.date < current.date ? prev : current
   ).id;
 
+  const get = type ? type : leastRecentDateId;
   const list = await getAndProcessMovies({
-    type: type ? type : leastRecentDateId,
+    type: get,
     context,
   });
 
@@ -269,8 +301,8 @@ export async function loader({ context, request }: LoaderFunctionArgs) {
       results: list,
       lastUpdate: new Date().getTime(),
     });
-    await context.env.KV.put(leastRecentDateId, data);
+    await context.env.KV.put(get, data);
   }
 
-  return json({ status: "ok", updated: leastRecentDateId });
+  return json({ status: "ok", updated: get });
 }

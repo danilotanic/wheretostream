@@ -1,6 +1,7 @@
 import { Genre } from "~/utils/api/moviedb.types";
 
 export type RapidAPIResponse = {
+  message?: string;
   result: {
     type: string;
     title: string;
