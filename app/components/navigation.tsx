@@ -38,12 +38,12 @@ export default function Navigation() {
   return (
     <nav
       className={cn(
-        "px-10 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 lg:grid grid-cols-5"
+        "px-6 lg:px-10 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 lg:grid grid-cols-5"
       )}
     >
       <ul className="flex items-center col-span-1 xl:col-span-2 justify-center lg:justify-start">
         <li>
-          <Link to="/" className="pr-3 block">
+          <Link to="/" className="pr-4 block">
             <Logo />
           </Link>
         </li>
