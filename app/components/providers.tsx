@@ -64,7 +64,7 @@ export default function Providers({
                 key={country.code}
                 className="transition-colors duration-300 hover:duration-100 py-1.5 rounded-lg hover:bg-neutral-100"
               >
-                <div className="max-w-xl mx-auto flex items-center gap-4">
+                <div className="max-w-xl mx-auto flex items-center gap-1">
                   <Country {...country} />
 
                   {availableKeys.map((key) => {

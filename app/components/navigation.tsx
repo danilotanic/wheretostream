@@ -55,22 +55,22 @@ export default function Navigation() {
         </li>
         <li>
           <NavLink
-            to="/?filter=new"
-            prefetch="intent"
-            className="px-3 py-2 block"
-            active={currentFilter === "new"}
-          >
-            New
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
             prefetch="intent"
             to="/?filter=upcoming"
             className="px-3 py-2 block"
             active={currentFilter === "upcoming"}
           >
             Upcoming
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/?filter=new"
+            prefetch="intent"
+            className="px-3 py-2 block"
+            active={currentFilter === "new"}
+          >
+            Updated
           </NavLink>
         </li>
       </ul>
