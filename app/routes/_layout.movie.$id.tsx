@@ -4,17 +4,9 @@ import { Suspense } from "react";
 import ActivityIndicator from "~/components/activityIndicator";
 import Error from "~/components/error";
 import Poster from "~/components/poster";
-import Country from "~/components/table/country";
-import TableHeader from "~/components/table/header";
-import Option, { OptionUnavailable } from "~/components/table/option";
-import Provider from "~/components/table/provider";
-import ProvidersCarousel from "~/components/table/providersCarousel";
+import Providers from "~/components/providers";
 import { humanReadableTime } from "~/utils";
 import { getMovie } from "~/utils/api/movie.server";
-import {
-  Country as CountryProps,
-  Option as OptionProps,
-} from "~/utils/api/rapidapi.types";
 import { getSteamingInfo } from "~/utils/api/streaming.server";
 import { getLocation } from "~/utils/getlocation.server";
 
@@ -39,8 +31,6 @@ export async function loader({ request, context, params }: LoaderFunctionArgs) {
     { headers: { "Cache-Control": "max-age=86400, public" } }
   );
 }
-
-type CountryKey = keyof CountryProps;
 
 export default function Movie() {
   const {
@@ -85,88 +75,9 @@ export default function Movie() {
           }
         >
           <Await resolve={providers} errorElement={<Error />}>
-            {(providers) => {
-              if (providers.length === 0) return <Error />;
-
-              const selected = providers.find(
-                (p) => p.slug === (provider ?? providers?.[0]?.slug)
-              );
-
-              const keysToCheck: CountryKey[] = ["buy", "rent", "subscription"];
-              const availableKeys: CountryKey[] = [];
-
-              keysToCheck.forEach((key) => {
-                if (selected?.countries.some((obj) => key in obj)) {
-                  availableKeys.push(key);
-                }
-              });
-
-              return (
-                <>
-                  <div className="w-full">
-                    <div className="max-w-xl mx-auto w-full">
-                      {providers.length <= 4 ? (
-                        <ul className="flex my-8 justify-center gap-2 items-center">
-                          {providers.map((provider) => (
-                            <Provider
-                              {...provider}
-                              key={provider.slug}
-                              selected={selected?.slug}
-                              className="w-[132px]"
-                            />
-                          ))}
-                        </ul>
-                      ) : null}
-
-                      {providers.length > 4 ? (
-                        <ProvidersCarousel
-                          selected={selected}
-                          providers={providers}
-                        />
-                      ) : null}
-                    </div>
-
-                    {selected?.countries && selected.countries.length > 0 ? (
-                      <>
-                        <TableHeader keys={availableKeys} />
-                        <ul className="max-w-3xl mx-auto">
-                          {selected.countries.map((country) => (
-                            <li
-                              key={country.code}
-                              className="transition-colors duration-300 hover:duration-100 py-1.5 rounded-lg hover:bg-neutral-100"
-                            >
-                              <div className="max-w-xl mx-auto flex items-center gap-4">
-                                <Country {...country} />
-
-                                {availableKeys.map((key) => {
-                                  const item = country[key] as OptionProps;
-
-                                  return (
-                                    <>
-                                      {item && item.link ? (
-                                        <Option to={item.link}>
-                                          {item?.price
-                                            ? item?.price.formatted
-                                            : "Stream"}
-                                        </Option>
-                                      ) : (
-                                        <OptionUnavailable />
-                                      )}
-                                    </>
-                                  );
-                                })}
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    ) : (
-                      <Error />
-                    )}
-                  </div>
-                </>
-              );
-            }}
+            {(providers) => (
+              <Providers selected={provider} providers={providers} />
+            )}
           </Await>
         </Suspense>
       </div>

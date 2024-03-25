@@ -34,7 +34,7 @@ export default function Navigation() {
   return (
     <nav
       className={cn(
-        "p-6 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 lg:grid grid-cols-5"
+        "p-10 sticky bg-neutral-100/80 z-50 backdrop-blur-2xl top-0 w-full py-7 lg:grid grid-cols-5"
       )}
     >
       <ul className="flex items-center col-span-1 xl:col-span-2 justify-center lg:justify-start">
