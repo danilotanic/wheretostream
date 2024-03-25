@@ -61,41 +61,46 @@ export default function Providers({
                 </AccordionTrigger>
                 <AccordionContent>
                   <ul>
-                    {availableKeys.map((key) => {
-                      const item = country[key] as OptionProps;
-                      return (
-                        <li
-                          className="flex items-center mb-1"
-                          key={`option-${key}`}
-                        >
-                          {item && item.link ? (
-                            <Link
-                              to={item.link}
-                              className="flex-1 flex items-center"
-                            >
-                              <div className="capitalize flex-1">{key}</div>
-                              <Option to={item.link} className="min-w-0">
-                                {item?.price ? item?.price.formatted : "Stream"}
-                              </Option>
-                            </Link>
-                          ) : (
-                            <>
-                              <div className="flex-1 capitalize">{key}</div>
-                              <OptionUnavailable
-                                className="min-w-0"
-                                key={`option-${key}`}
-                              />
-                            </>
-                          )}
-                        </li>
-                      );
-                    })}
                     {country.user &&
                     !country.buy &&
                     !country.rent &&
                     !country.subscription ? (
-                      <OptionVPN className="w-full" />
-                    ) : null}
+                      <li className="w-full">
+                        <OptionVPN className="min-w-0 w-full" />
+                      </li>
+                    ) : (
+                      availableKeys.map((key) => {
+                        const item = country[key] as OptionProps;
+                        return (
+                          <li
+                            className="flex items-center mb-1"
+                            key={`option-${key}`}
+                          >
+                            {item && item.link ? (
+                              <Link
+                                to={item.link}
+                                className="flex-1 flex items-center"
+                              >
+                                <div className="capitalize flex-1">{key}</div>
+                                <Option to={item.link} className="min-w-0">
+                                  {item?.price
+                                    ? item?.price.formatted
+                                    : "Stream"}
+                                </Option>
+                              </Link>
+                            ) : (
+                              <>
+                                <div className="flex-1 capitalize">{key}</div>
+                                <OptionUnavailable
+                                  className="min-w-0"
+                                  key={`option-${key}`}
+                                />
+                              </>
+                            )}
+                          </li>
+                        );
+                      })
+                    )}
                   </ul>
                 </AccordionContent>
               </AccordionItem>

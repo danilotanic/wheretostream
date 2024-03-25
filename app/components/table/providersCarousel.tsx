@@ -75,14 +75,14 @@ export default function ProvidersCarousel({
       <div className="block sm:hidden">
         <motion.div
           style={{ scaleX: scaleLeft, originX: 0 }}
-          className="absolute pointer-events-none inset-y-0 w-40 from-white to-white/0 bg-gradient-to-r"
+          className="absolute pointer-events-none inset-y-0 w-20 md:w-40 from-white to-white/0 bg-gradient-to-r"
         />
         <motion.div
           style={{ scaleX: scaleRight, originX: "100%" }}
-          className="absolute pointer-events-none inset-y-0 right-0 w-40 from-white to-white/0 bg-gradient-to-l"
+          className="absolute pointer-events-none inset-y-0 right-0 w-20 md:w-40 from-white to-white/0 bg-gradient-to-l"
         />
       </div>
-      <div className={cn(moreThanFour ? "md:block" : "hidden")}>
+      <div className={cn("hidden", moreThanFour ? "md:block" : "")}>
         <CarouselPrevious />
         <CarouselNext />
       </div>
