@@ -29,7 +29,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           </time>
         </header>
         <div className="flex-1 flex items-center justify-center">
-          <div className="max-h-[260px] h-full p-4 2xl:max-h-[320px]">
+          <div className="max-h-64 h-full p-4 2xl:max-h-80">
             <Link to={`/movie/${movie.id}`} prefetch="intent">
               <Poster name={movie.title} path={movie.poster_path} />
             </Link>
@@ -40,10 +40,14 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
             Streaming in {movie.countries ?? 0}{" "}
             {(movie.countries ?? 0) === 1 ? `country` : `countries`}
           </span>
-          <span className="text-black flex translate-x-3 transition-transform group-hover:translate-x-0 items-center">
+          <Link
+            to={`/movie/${movie.id}`}
+            prefetch="intent"
+            className="text-black flex translate-x-3 transition-transform group-hover:translate-x-0 items-center"
+          >
             See where{" "}
             <ChevronRightIcon className="size-4 transition-opacity opacity-0 group-hover:opacity-100" />
-          </span>
+          </Link>
         </footer>
       </div>
     );

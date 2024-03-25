@@ -62,7 +62,7 @@ export default function Movie() {
               : "N/A"}
           </time>
         </header>
-        <div className="h-56 p-4">
+        <div className="h-64 my-8 p-4 2xl:h-80">
           <Poster name={details.name} path={details.poster_path} />
         </div>
         <p className="mx-auto text-balance max-w-md text-center text-neutral-600 dark:text-neutral-400">
