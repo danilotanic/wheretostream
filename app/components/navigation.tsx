@@ -2,11 +2,13 @@ import {
   Link,
   LinkProps,
   useLocation,
+  useParams,
   useSearchParams,
 } from "@remix-run/react";
 import { SearchIcon } from "lucide-react";
 import Logo from "~/components/logo";
 import { useSearchContext } from "~/components/search";
+import ShareButton from "~/components/share";
 import { cn } from "~/utils";
 
 function NavLink(props: LinkProps & { active?: boolean }) {
@@ -23,9 +25,11 @@ function NavLink(props: LinkProps & { active?: boolean }) {
 }
 
 export default function Navigation() {
+  const { id } = useParams();
   const location = useLocation();
   const { setOpen } = useSearchContext();
   const [searchParams] = useSearchParams();
+
   const currentFilter =
     location.pathname === "/"
       ? searchParams.get("filter") || "popular"
@@ -84,14 +88,18 @@ export default function Navigation() {
       </button>
 
       <div className="items-center hidden lg:flex xl:col-span-2 col-span-1 justify-center lg:justify-end">
-        <Link
-          target="_blank"
-          rel="noreferrer"
-          to="https://finetune.co/"
-          className="text-neutral-600"
-        >
-          Powered by <span className="text-black">FineTune</span>
-        </Link>
+        {id ? (
+          <ShareButton />
+        ) : (
+          <Link
+            target="_blank"
+            rel="noreferrer"
+            to="https://finetune.co/"
+            className="text-neutral-600"
+          >
+            Powered by <span className="text-black">FineTune</span>
+          </Link>
+        )}
       </div>
     </nav>
   );
